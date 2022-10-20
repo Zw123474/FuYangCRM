@@ -61,14 +61,14 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
+  height: 75px;
   overflow: hidden;
   position: relative;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
 
   .hamburger-container {
-    line-height: 46px;
+    line-height: 75px;
     height: 100%;
     float: left;
     cursor: pointer;
@@ -82,12 +82,14 @@ export default {
 
   .breadcrumb-container {
     float: left;
+    line-height: 78px;
+    font-size: 16px;
   }
 
   .right-menu {
     float: right;
     height: 100%;
-    line-height: 50px;
+    line-height: 90px;
 
     &:focus {
       outline: none;
