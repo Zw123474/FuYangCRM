@@ -31,45 +31,108 @@
         </el-card>
       </el-col>
       <el-col :span="6">
-        <el-card shadow="never">
-          <div slot="header">
-            部门工作量统计
+        <el-card shadow="never" class="workEcharts">
+          <div class="btn">
+            <el-button size="mini" icon="el-icon-more"></el-button>
           </div>
-          <div id="myCharts" ref="myCharts"></div>
+          <div class="pieChart" style="height:100%;width:100%;">
+            <PieChart></PieChart>
+          </div>
         </el-card>
       </el-col>
     </el-row>
     <el-row :gutter="20">
       <el-col :span="6">
-        <el-card shadow="never">
+        <el-card shadow="never" class="fourCards">
           <div slot="header">
-            部门工作量统计
+            日常/夜间工作量
           </div>
-          <div id="myCharts" ref="myCharts"></div>
+          <div class="pieChart" style="height:100%;width:100%;">
+            <fourCardEcharts :piedata="data1"></fourCardEcharts>
+          </div>
         </el-card>
       </el-col>
       <el-col :span="6">
-        <el-card shadow="never">
+        <el-card shadow="never" class="fourCards">
           <div slot="header">
-            部门工作量统计
+            修复率
           </div>
-          <div id="myCharts" ref="myCharts"></div>
+          <div class="pieChart" style="height:100%;width:100%;">
+            <fourCardEcharts :piedata="data2"></fourCardEcharts>
+          </div>
         </el-card>
       </el-col>
       <el-col :span="6">
-        <el-card shadow="never">
+        <el-card shadow="never" class="fourCards">
           <div slot="header">
-            部门工作量统计
+            超时率
           </div>
-          <div id="myCharts" ref="myCharts"></div>
+          <div class="pieChart" style="height:100%;width:100%;">
+            <fourCardEcharts :piedata="data3"></fourCardEcharts>
+          </div>
         </el-card>
       </el-col>
       <el-col :span="6">
-        <el-card shadow="never">
+        <el-card shadow="never" class="fourCards">
           <div slot="header">
-            部门工作量统计
+            调用施工队比例
           </div>
-          <div id="myCharts" ref="myCharts"></div>
+          <div class="pieChart" style="height:100%;width:100%;">
+            <fourCardEcharts :piedata="data4"></fourCardEcharts>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="8">
+        <el-card shadow="never" class="fourCards">
+          <div slot="header">保修业务产品分析比例</div>
+          <div class="tableCard">
+            <el-table :data="tableData" :show-header="false" style="width: 100%;height:100%">
+              <el-table-column prop="type" style="width:40%" align="center">
+              </el-table-column>
+              <el-table-column prop="number" style="width: 40%" align="center">
+              </el-table-column>
+              <el-table-column prop="ratio" style="width: 20%" align="center">
+              </el-table-column>
+            </el-table>
+            <el-pagination small @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="size" layout="total, prev, pager, next" :total="total" align="right">
+            </el-pagination>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card shadow="never" class="fourCards">
+          <div slot="header">保修业务产品分析比例</div>
+          <div class="tableCard">
+            <el-table :data="tableData" :show-header="false" style="width: 100%;height:100%">
+              <el-table-column prop="type" style="width:40%" align="center">
+              </el-table-column>
+              <el-table-column prop="number" style="width: 40%" align="center">
+              </el-table-column>
+              <el-table-column prop="ratio" style="width: 20%" align="center">
+              </el-table-column>
+            </el-table>
+            <el-pagination small @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="size" layout="total, prev, pager, next" :total="total" align="right">
+            </el-pagination>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="8">
+        <el-card shadow="never" class="fourCards">
+          <div slot="header">个人工作量排行</div>
+          <div class="tableCard">
+            <el-table :data="tableData" :show-header="false" style="width: 100%;height:100%">
+              <el-table-column prop="type" style="width:40%" align="center">
+              </el-table-column>
+              <el-table-column prop="number" style="width: 40%" align="center">
+              </el-table-column>
+              <el-table-column prop="ratio" style="width: 20%" align="center">
+              </el-table-column>
+            </el-table>
+            <el-pagination small @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="size" layout="total, prev, pager, next" :total="total" align="right">
+            </el-pagination>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -78,7 +141,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
+import PieChart from '@/components/echarts/workEcharts.vue'
+import fourCardEcharts from '@/components/echarts/fourCardEcharts'
 export default {
   name: 'Dashboard',
   // computed: {
@@ -86,12 +150,32 @@ export default {
   //     'name'
   //   ])
   // },
+  components: {
+    PieChart,
+    fourCardEcharts
+  },
   data () {
     return {
       name: 'Avicii',
       role: '总管',
       time: '2022年10月20日',
-      notice: [{ title: '调用施工队情况需求', time: '2022-09-23 10:00' }, { title: '运维工单创建说明', time: '2022-09-23 10:00' }, { title: '员工维护运维相关规范', time: '2022-09-23 10:00' }, { title: '关于个人信息数据统计', time: '2022-09-23 10:00' }]
+      notice: [{ title: '调用施工队情况需求', time: '2022-09-23 10:00' }, { title: '运维工单创建说明', time: '2022-09-23 10:00' }, { title: '员工维护运维相关规范', time: '2022-09-23 10:00' }, { title: '关于个人信息数据统计', time: '2022-09-23 10:00' }],
+      data1: [{ value: 100, name: '日常' },
+      { value: 150, name: '夜间' },],
+      data2: [{ value: 100, name: '超时' },
+      { value: 150, name: '未超时' },],
+      data3: [{ value: 100, name: '超时' },
+      { value: 150, name: '未超时' },],
+      data4: [{ value: 100, name: '调用' },
+      { value: 150, name: '未调用' },],
+      tableData: [
+        { type: '业务产品类型1', number: '运维工单数量:100', ratio: '占比5%' },
+        { type: '业务产品类型2', number: '运维工单数量:100', ratio: '占比5%' },
+        { type: '业务产品类型3', number: '运维工单数量:100', ratio: '占比5%' },
+      ],
+      size: 3,
+      total: 100,
+      currentPage: 1,
     }
   },
   mounted () {
@@ -111,7 +195,7 @@ export default {
           top: '3%',
           bottom: '3%',
           width: "90%", // 宽度
-          height: "90%",// 高度
+          height: "80%",// 高度
           containLabel: true
         },
         xAxis: {
@@ -136,8 +220,8 @@ export default {
           axisTick: {
             show: false
           },
-          axisLine:{
-            show:false
+          axisLine: {
+            show: false
           },
           axisLabel: {
             color: '#333',//y字体颜色
@@ -175,6 +259,13 @@ export default {
         ]
       }
       myCharts.setOption(options);
+    },
+    // handleSizeChange (val) {
+    //   this.currentPage = 1;
+    //   this.pageSize = val
+    // },
+    handleCurrentChange (val) {
+      this.currentPage = val;
     }
   }
 }
@@ -237,9 +328,40 @@ export default {
       }
     }
     .workEcharts {
+      .el-button--mini,
+      .el-button--mini.is-round {
+        padding: 5px 8px;
+      }
+      .el-button--mini,
+      .el-button--small {
+        font-size: 16px;
+        color: #ccc;
+      }
       height: 350px;
-      ::v-deep .el-card__body{
-        height: 280px
+      position: relative;
+      ::v-deep .el-card__body {
+        height: 100%;
+      }
+      .btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+      }
+    }
+    .fourCards {
+      height: 270px;
+      ::v-deep .el-card__body {
+        height: 200px;
+      }
+      ::v-deep .el-table td,
+      .el-table th.is-leaf {
+        border: none;
+      }
+    }
+    .tableCard {
+      height: 100%;
+      .el-table::before{
+        height: 0;
       }
     }
   }

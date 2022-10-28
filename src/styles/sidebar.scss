@@ -68,6 +68,12 @@
       width: 100% !important;
     }
 
+    .el-menu-item{
+      font-size: $sideBarTextSize;
+    }
+    .el-submenu__title{
+      font-size: $sideBarTextSize;
+    }
     // menu hover
     .submenu-title-noDropdown,
     .el-submenu__title {

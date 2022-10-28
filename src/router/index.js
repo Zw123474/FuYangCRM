@@ -56,106 +56,164 @@ export const constantRoutes = [
   },
 
   {
-    path: '/example',
+    path: '/organization',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    redirect: '/organization/workersList',
+    name: 'Organization',
+    meta: { title: '组织架构管理', icon: 'setting' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'workersList',
+        name: 'WorkersList',
+        component: () => import('@/views/organizations/workersList/index'),
+        meta: { title: '组织架构人员列表', icon: 'el-icon-minus' },
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
+        path: 'details',
+        name: 'Details',
+        component: () => import('@/views/organizations/workersList/details'),
+        meta: { title: '组织架构人员详情', icon: 'el-icon-minus' },
+        hidden: true
       },
       {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
+        path: 'departmentMatch',
+        name: 'DepartmentMatch',
+        component: () => import('@/views/organizations/departmentMatch/index'),
+        meta: { title: '部门接单类型分配', icon: 'el-icon-minus' }
+      },
+      {
+        path: 'rolesList',
+        name: 'RolesList',
+        component: () => import('@/views/organizations/rolesList/index'),
+        meta: { title: '角色管理', icon: 'el-icon-minus' }
       }
     ]
   },
-
   {
-    path: 'external-link',
+    path: '/businessProduct',
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'businessProduct',
+        name: 'BusinessProduct',
+        component: () => import('@/views/businessProduct/index'),
+        meta: { title: '业务产品层级管理', icon: 'share' }
+      }
+    ]
+  },
+  {
+    path: '/userInfo',
+    component: Layout,
+    redirect: '/userInfo/usersAdd',
+    name: 'UserInfo',
+    meta: { title: '用户信息管理', icon: 'file-copy' },
+    children: [
+      {
+        path: 'usersList',
+        name: 'usersList',
+        component: () => import('@/views/userInfo/usersList/index'),
+        meta: { title: '用户信息列表', icon: 'el-icon-minus' }
+      },
+      {
+        path: 'workOrderList',
+        name: 'WorkOrderList',
+        component: () => import('@/views/userInfo/workOrderList/index'),
+        meta: { title: '项目安装单查询', icon: 'el-icon-minus' }
+      }
+    ]
+  },
+  {
+    path: '/faultTypeList',
+    component: Layout,
+    children: [
+      {
+        path: 'faultTypeList',
+        name: 'FaultTypeList',
+        component: () => import('@/views/faultTypeList/index'),
+        meta: { title: '保修故障类型管理', icon: 'tools' }
+      }
+    ]
+  },
+  {
+    path: '/operationOrder',
+    component: Layout,
+    redirect: '/operationOrder/orderList',
+    name: 'OperationOrder',
+    meta: { title: '运维工单管理', icon: 'view-module' },
+    children: [
+      {
+        path: 'orderList',
+        name: 'orderList',
+        component: () => import('@/views/operationOrder/orderList/index'),
+        meta: { title: '运维工单列表', icon: 'el-icon-minus' }
+      },
+      {
+        path: 'orderList-cus',
+        name: 'OrderList-cus',
+        component: () => import('@/views/operationOrder/orderList-cus/index'),
+        meta: { title: '运维工单池', icon: 'el-icon-minus' }
+      }, {
+        path: 'orderBackList',
+        name: 'OrderBackList',
+        component: () => import('@/views/operationOrder/orderBackList/index'),
+        meta: { title: '退回运维工单列表', icon: 'el-icon-minus' }
+      },
+      {
+        path: 'checkingOrder',
+        name: 'CheckingOrder',
+        component: () => import('@/views/operationOrder/checkingOrder/index'),
+        meta: { title: '审核运维工单', icon: 'el-icon-minus' }
+      },
+      {
+        path: 'installOrder',
+        name: 'InstallOrder',
+        component: () => import('@/views/operationOrder/installOrder/index'),
+        meta: { title: '项目安装单查询', icon: 'el-icon-minus' }
+      }
+    ]
+  },
+  {
+    path: '/agent',
+    component: Layout,
+    redirect: '/agent/agentList',
+    name: 'Agent',
+    meta: { title: '代维单位管理', icon: 'fork' },
+    children: [
+      {
+        path: 'agentList',
+        name: 'AgentList',
+        component: () => import('@/views/agent/agentList/index'),
+        meta: { title: '代维单位列表', icon: 'el-icon-minus' }
+      },
+      {
+        path: 'agentOperation',
+        name: 'AgentOperation',
+        component: () => import('@/views/agent/agentOperation/index'),
+        meta: { title: '代维单位转单记录', icon: 'el-icon-minus' }
+      }
+    ]
+  },
+  {
+    path: '/announcement',
+    component: Layout,
+    children: [
+      {
+        path: 'announcement',
+        name: 'Announcement',
+        component: () => import('@/views/announcement/index'),
+        meta: { title: '公告管理', icon: 'root-list' }
+      }
+    ]
+  },
+  {
+    path: '/systemDailyWork',
+    component: Layout,
+    children: [
+      {
+        path: 'systemDailyWork',
+        name: 'SystemDailyWork',
+        component: () => import('@/views/systemDailyWork/index'),
+        meta: { title: '系统人员日志记录', icon: 'usergroup' }
       }
     ]
   },
@@ -173,7 +231,7 @@ const createRouter = () => new Router({
 const router = createRouter()
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
-export function resetRouter() {
+export function resetRouter () {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher // reset router
 }
