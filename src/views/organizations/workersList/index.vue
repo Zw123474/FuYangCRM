@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <!-- 主页内容 -->
     <PageTool style="margin-bottom:20px"></PageTool>
     <el-card class="tableCard" style="border-radius:20px" shadow="never">
       <div slot="header">
@@ -62,6 +63,7 @@
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </el-card>
+    <!-- 添加编辑抽屉栏 -->
     <el-drawer :title="dialogTitle" :visible.sync="dialogVisible" direction="rtl" size="25%" custom-class="drawer" ref="drawer">
       <div class="drawer__content">
         <div class="block">
@@ -99,6 +101,7 @@
         </div>
       </div>
     </el-drawer>
+    <!-- 分配权限对话框 -->
     <el-dialog title="分配用户管理权限" :visible.sync="roleDialog" width="35%">
       <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
       <div style="margin: 15px 0;"></div>
@@ -144,7 +147,7 @@ export default {
   },
   methods: {
     handleCheckAllChange (val) {
-      this.checkedRoles = val ? cityOptions : [];
+      this.checkedRoles = val ? roles : checkedRoles;
       this.isIndeterminate = false;
     },
     handlecheckedRolesChange (value) {
@@ -165,7 +168,7 @@ export default {
     handleAdd () {
       this.dialogVisible = true
       this.dialogTitle = "添加子管理员"
-      this.form = ''
+      this.form = {}
     },
     handleEdit (row) {
       this.dialogVisible = true

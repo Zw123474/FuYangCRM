@@ -104,7 +104,7 @@ export const constantRoutes = [
   {
     path: '/userInfo',
     component: Layout,
-    redirect: '/userInfo/usersAdd',
+    redirect: '/userInfo/usersList',
     name: 'UserInfo',
     meta: { title: '用户信息管理', icon: 'file-copy' },
     children: [
@@ -113,6 +113,13 @@ export const constantRoutes = [
         name: 'usersList',
         component: () => import('@/views/userInfo/usersList/index'),
         meta: { title: '用户信息列表', icon: 'el-icon-minus' }
+      },
+      {
+        path: 'addDetails',
+        name: 'AddDetails',
+        component: () => import('@/views/userInfo/usersList/addDetails'),
+        meta: { title: '添加用户信息', icon: 'el-icon-minus' },
+        hidden:true
       },
       {
         path: 'workOrderList',
@@ -143,9 +150,30 @@ export const constantRoutes = [
     children: [
       {
         path: 'orderList',
-        name: 'orderList',
+        name: 'OrderList',
         component: () => import('@/views/operationOrder/orderList/index'),
         meta: { title: '运维工单列表', icon: 'el-icon-minus' }
+      },
+      {
+        path: 'addOrder',
+        name: 'AddOrder',
+        component: () => import('@/views/operationOrder/orderList/addOrder'),
+        meta: { title: '创建运维工单', icon: 'el-icon-minus' },
+        hidden:true
+      },
+      {
+        path: 'editOrder',
+        name: 'EditOrder',
+        component: () => import('@/views/operationOrder/orderList/editOrder'),
+        meta: { title: '编辑运维工单', icon: 'el-icon-minus' },
+        hidden: true
+      },
+      {
+        path: 'checkOrder',
+        name: 'CheckOrder',
+        component: () => import('@/views/operationOrder/orderList/checkOrder'),
+        meta: { title: '运维工单详情', icon: 'el-icon-minus' },
+        hidden: true
       },
       {
         path: 'orderList-cus',

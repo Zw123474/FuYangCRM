@@ -14,13 +14,20 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handlerole(scope.row)">管理接收运维工单类型</el-button>
+            <el-button type="text" size="small" @click="handleMatch(scope.row)">管理接收运维工单类型</el-button>
           </template>
         </el-table-column>
       </el-table>
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </el-card>
+    <el-dialog title="产品业务类型" :visible.sync="centerDialogVisible" center width="35%">
+      <el-transfer v-model="value" :data="preData"></el-transfer>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -31,7 +38,37 @@ export default {
       tableData: [{ id: 1, department: '主管' }, { id: 2, department: '一级主管' }, { id: 3, department: '一级主管' }, { id: 4, department: '一级主管', }, { id: 5, department: '一级主管', }],
       size: 10,
       total: 20,
-      currentPage: 1
+      currentPage: 1,
+      centerDialogVisible: false,
+      preData: [{
+        key: 1,
+        label: 'VPN',
+        disabled: false
+      },
+      {
+        key: 2,
+        label: 'IDC业务',
+        disabled: false
+      },
+      {
+        key: 3,
+        label: '企业宽带服务产品',
+        disabled: true
+      },{
+        key: 4,
+        label: '数据链路出租',
+        disabled: false
+      },{
+        key: 5,
+        label: '网络视频监控',
+        disabled: false
+      },{
+        key: 6,
+        label: '智慧类项目',
+        disabled: false
+      },],
+      value: [],
+
     }
   },
   methods: {
@@ -42,6 +79,9 @@ export default {
     handleCurrentChange (val) {
       this.currentPage = val;
     },
+    handleMatch (row) {
+      this.centerDialogVisible = true
+    }
   }
 }
 </script>

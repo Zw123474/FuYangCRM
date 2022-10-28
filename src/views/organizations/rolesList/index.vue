@@ -21,6 +21,17 @@
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="size" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </el-card>
+    <el-dialog title="分配角色" :visible.sync="roledialogVisible">
+      <el-checkbox-group v-model="checkList">
+        <el-checkbox v-for="item in tableData" :key="item.id" :label="item.id">{{
+          item.role
+        }}</el-checkbox>
+      </el-checkbox-group>
+      <template #footer>
+        <el-button type="primary" @click="assignRoles">确定</el-button>
+        <el-button @click="roledialogVisible = false">取消</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -31,7 +42,9 @@ export default {
       tableData: [{ id: 1, role: '主管' }, { id: 2, role: '一级主管' }, { id: 3, role: '一级主管' }, { id: 4, role: '一级主管', }, { id: 5, role: '一级主管', }],
       size: 10,
       total: 20,
-      currentPage: 1
+      currentPage: 1,
+      roledialogVisible: false,
+      checkList: [],
     }
   },
   methods: {
@@ -41,6 +54,13 @@ export default {
     },
     handleCurrentChange (val) {
       this.currentPage = val;
+    },
+    handlerole () {
+      this.roledialogVisible = true
+    },
+    // 给员工分配权限
+    assignRoles () {
+      this.roledialogVisible = false
     },
   }
 }

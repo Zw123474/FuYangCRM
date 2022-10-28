@@ -13,3 +13,12 @@ export function setToken(token) {
 export function removeToken() {
   return Cookies.remove(TokenKey)
 }
+
+const TimeKey = 'eric_time_key'
+// 存时间戳
+export function setTime (time) {
+  return Cookies.set(TimeKey, time)
+}
+export function getTime () {
+  return Cookies.get(TimeKey)
+}

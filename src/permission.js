@@ -57,7 +57,7 @@ router.beforeEach(async(to, from, next) => {
     }
   }
 })
-
+// 开启后置路由守卫
 router.afterEach(() => {
   // finish progress bar
   NProgress.done()

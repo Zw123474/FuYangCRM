@@ -15,7 +15,6 @@
   display: none;
 }
 
-
 // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
   transform: none;
@@ -39,11 +38,68 @@
 // dropdown
 .el-dropdown-menu {
   a {
-    display: block
+    display: block;
   }
 }
 
 // to fix el-date-picker css style
 .el-range-separator {
   box-sizing: content-box;
+}
+.el-button--primary {
+  background-color: #246ee9;
+}
+.el-button--primary.is-plain {
+  color: #246ee9;
+  background: #fff;
+  border-color: #246ee9;
+}
+.el-radio--small.is-bordered .el-radio__inner{
+    display: none;
+  }
+.el-radio.is-bordered {
+  border: 1px solid #246ee9;
+  color: #246ee9;
+}
+.el-radio.is-bordered.is-checked {
+  background-color: #246ee9;
+  .el-radio__input.is-checked + .el-radio__label {
+    color: #fff;
+  }
+}
+.el-card__header{
+  font-size: 26px;
+  .el-button {
+      font-size: 16px;
+      float: right;
+    }
+}
+.el-form
+.el-select{
+  width: 100%;
+}
+.el-form-item{
+  margin-bottom: 10px;
+}
+.el-input__inner{
+  height: 35px;
+}
+.el-drawer__header{
+  font-size: 20px;
+  color: #000;
+}
+.el-date-editor.el-input, .el-date-editor.el-input__inner{
+  width: 100%;
+}
+.el-input.is-disabled .el-input__inner{
+  cursor: pointer;
+}
+.el-select .el-input.is-disabled .el-input__inner{
+  cursor: pointer;
+}
+.el-input.is-disabled .el-input__icon{
+  cursor: pointer;
+}
+.el-textarea.is-disabled .el-textarea__inner{
+  cursor: pointer;
 }

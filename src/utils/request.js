@@ -1,17 +1,37 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { getToken } from '@/utils/auth'
+import router from '@/router'
+import { getToken,getTime } from '@/utils/auth'
 
 // create an axios instance
-const service = axios.create({
+const request = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  timeout: 10000 // request timeout
 })
 
+// // 添加请求拦截器
+// request.interceptors.request.use(function (config) {
+//   // 在发送请求之前查看token是否过期
+//   const token = store.state.user.token
+//   if (token) {
+//     const time = Date.now() - getTime()
+//     if (time > 7200000) {
+//       store.dispatch('user/logout')
+//       router.push('/login')
+//     }
+//     config.headers['Authorization'] = token
+//   }
+//   return config
+// }, function (error) {
+//   // 对请求错误返回
+//   return Promise.reject(error)
+// })
+
+// 没有时间限制的token,开发用
 // request interceptor
-service.interceptors.request.use(
+request.interceptors.request.use(
   config => {
     // do something before request is sent
 
@@ -30,8 +50,28 @@ service.interceptors.request.use(
   }
 )
 
+// // 添加响应拦截器
+// request.interceptors.response.use(function (response) {
+//   const { data, message, success } = response.data
+//   if (success) {
+//     // 对响应数据做点什么
+//     return data
+//   } else {
+//     Message.error(message)
+//     return Promise.reject(new Error(message))
+//   }
+// }, function (error) {
+//   console.dir(error)
+//   if (error.response && error.response.data && error.response.data.code === 10002) {
+//     store.dispatch('user/logout')
+//     router.push('/login')
+//   }
+//   // 对响应错误做点什么
+//   return Promise.reject(error)
+// })
+
 // response interceptor
-service.interceptors.response.use(
+request.interceptors.response.use(
   /**
    * If you want to get http information such as headers or status
    * Please return  response => response
@@ -82,4 +122,4 @@ service.interceptors.response.use(
   }
 )
 
-export default service
+export default request
