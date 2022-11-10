@@ -13,53 +13,57 @@
         <el-form ref="form" :model="search" label-width="100px">
           <el-row :gutter="10">
             <el-col :span="4">
-              <el-form-item label="账户名称">
-                <el-input v-model="search.accountName" placeholder="请输入账户名称"></el-input>
+              <el-form-item label="创建时间">
+                <el-input v-model="search.createTime" placeholder="请输入创建时间"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label="客户编号">
-                <el-input v-model="search.cusNum" placeholder="请输入客户编号"></el-input>
+              <el-form-item label="部门id">
+                <el-input v-model="search.departmentId" placeholder="请输入部门id"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label="用户名称">
-                <el-input v-model="search.userName" placeholder="请输入用户名称"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="用户编号">
-                <el-input v-model="search.userNum" placeholder="请输入用户编号"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="产品列表">
-                <el-select v-model="search.product" placeholder="类别1">
-                  <el-option v-for="item in productOptions" :key="item.id" :label="item.label" :value="item.id">
-                  </el-option>
+              <el-form-item label="是否转单">
+                <el-select v-model="search.isTransferOrder" placeholder="请选择是否转单">
+                  <el-option label="是" :value="1"></el-option>
+                  <el-option label="否" :value="0"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label="订购开始时间">
-                <el-date-picker v-model="search.startTime" type="date" placeholder="选择日期">
+              <el-form-item label="运维人员id">
+                <el-input v-model="search.maintenanceStaffId" placeholder="请输入运维人员id"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="报修类别">
+                <el-input v-model="search.repairCategory" placeholder="请输入报修类别"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="报修联系人">
+                <el-input v-model="search.repairContact" placeholder="请输入报修联系人"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="报修联系电话">
+                <el-input v-model="search.repairContactNumber" placeholder="请输入报修联系电话"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="报修时间">
+                <el-date-picker v-model="search.repairTime" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label="订购结束时间">
-                <el-date-picker v-model="search.endTime" type="date" placeholder="选择日期">
-                </el-date-picker>
+              <el-form-item label="用户编号">
+                <el-input v-model="search.userNumber" placeholder="请输入用户编号"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="4">
-              <el-form-item label="产品名称">
-                <el-input v-model="search.proName" placeholder="请输入用户名称"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="发展雇员">
-                <el-input v-model="search.responser" placeholder="请输入用户编号"></el-input>
+              <el-form-item label="用户编号">
+                <el-input v-model="search.userNumber" placeholder="请输入用户编号"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -196,7 +200,7 @@ export default {
     padding: 30px 0;
     margin: 0 35px;
     border-bottom: none;
-    .num{
+    .num {
       color: blue;
     }
   }

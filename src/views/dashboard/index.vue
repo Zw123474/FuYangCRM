@@ -360,7 +360,7 @@ export default {
     }
     .tableCard {
       height: 100%;
-      .el-table::before{
+      .el-table::before {
         height: 0;
       }
     }

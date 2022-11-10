@@ -4,13 +4,15 @@
     <el-card class="tableCard" style="border-radius:20px" shadow="never">
       <el-table :data="tableData" stripe style="width: 100%;font-size:18px" :header-cell-style="{
       background:'#e4eaf6',color:'#000000',height:'70px'}">
-        <el-table-column type="index" width="100" height="70px" label="序号" align="center">
-          <template slot-scope="scope">
-            <el-tag v-if="scope.row.id%2 == 1" type="warning"> {{scope.row.id}} </el-tag>
-            <el-tag v-else type="primary"> {{scope.row.id}} </el-tag>
+        <el-table-column type="index" label="序号" width="100" align="center">
+          <template scope="scope">
+            <el-tag v-if="(scope.$index+1)%2 == 1" type="warning"> {{scope.$index+1}} </el-tag>
+            <el-tag v-else type="primary"> {{scope.$index+1}} </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="role" label="角色名称" align="center">
+        <el-table-column prop="roleName" label="角色名称" align="center">
+        </el-table-column>
+        <el-table-column prop="remark" label="角色描述" align="center">
         </el-table-column>
         <el-table-column fixed="right" label="操作" align="center">
           <template slot-scope="scope">
@@ -23,12 +25,12 @@
     </el-card>
     <el-dialog title="分配角色" :visible.sync="roledialogVisible">
       <el-checkbox-group v-model="checkList">
-        <el-checkbox v-for="item in tableData" :key="item.id" :label="item.id">{{
-          item.role
+        <el-checkbox v-for="item in menuList" :key="item.id" :label="item.id">{{
+          item.name
         }}</el-checkbox>
       </el-checkbox-group>
       <template #footer>
-        <el-button type="primary" @click="assignRoles">确定</el-button>
+        <el-button type="primary" @click="submit">确定</el-button>
         <el-button @click="roledialogVisible = false">取消</el-button>
       </template>
     </el-dialog>
@@ -45,22 +47,68 @@ export default {
       currentPage: 1,
       roledialogVisible: false,
       checkList: [],
+      search: '',
+      menuList: [],
+      roleId:''
     }
   },
+  created () {
+    this.getRole()
+  },
   methods: {
+    getRole () {
+      let data = {
+        current: this.currentPage,
+        name: this.search,
+        size: this.size,
+      }
+      this.$Apis.roleList(data).then(res => {
+        this.tableData = res.data.list
+        this.current = res.data.current
+        this.size = res.data.size
+        this.total = res.data.total
+      })
+    },
+    getMenuList () {
+      console.log(111);
+      this.$Apis.menuList().then(res => {
+        console.log(res);
+        this.menuList = res.data
+      })
+    },
     handleSizeChange (val) {
       this.currentPage = 1;
-      this.pageSize = val;
+      this.size = val;
+      this.getRole()
     },
     handleCurrentChange (val) {
       this.currentPage = val;
+      this.getRole()
     },
-    handlerole () {
+    handlerole (row) {
       this.roledialogVisible = true
+      this.getMenuList()
+      this.roleId = row.id
+      this.checkList = row.menuIdList
+    },
+    roleBinding () {
+      let data = {
+        menuIds: this.checkList,
+        roleId: this.roleId
+      }
+      this.$Apis.roleBinding(data).then(res => {
+        console.log(res);
+        if(res.code === 200){
+          this.getRole()
+        }
+      })
     },
     // 给员工分配权限
-    assignRoles () {
+    submit () {
       this.roledialogVisible = false
+      this.checkList = this.checkList.toString()
+      this.roleBinding()
+      this.getRole()
     },
   }
 }
@@ -68,6 +116,9 @@ export default {
 
 <style lang="scss" scoped>
 .tableCard {
+  .el-button--text {
+    color: #246ee7;
+  }
   border-radius: 20px;
   .btn {
     span {

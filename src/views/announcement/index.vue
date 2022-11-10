@@ -4,29 +4,51 @@
     <PageTool style="margin-bottom:20px"></PageTool>
     <el-card class="tableCard" style="border-radius:20px" shadow="never">
       <div slot="header">
-        <svg-icon icon-class="phone" class="phoneIcon"></svg-icon>
-        历史发布公告 <span class="num">888</span> 条
-        <el-input suffix-icon="el-icon-search" v-model="search.type" placeholder="搜索公告标题" style="width:300px;margin-left:30px"></el-input>
-        <el-button type="primary" size="medium" style="float:right" icon="el-icon-folder-add" @click="handleAdd">新增公告</el-button>
+        <svg-icon icon-class="apps" class="appsIcon"></svg-icon>
+        历史发布公告 <span class="num">{{total}}</span> 条
+        <el-input v-model="search.title" placeholder="搜索公告标题" style="width:300px;margin-left:30px">
+          <i class="el-icon-search el-input__icon" slot="suffix" @click="getAnnouncementList()">
+          </i>
+        </el-input>
+        <el-button type="primary" size="medium" style="float:right" v-show="btnShow===true" @click="handleAdd">
+          <svg-icon icon-class="Group" style="margin-right:5px"></svg-icon>添加分类
+        </el-button>
       </div>
       <el-table :data="tableData" stripe style="width: 100%;font-size:18px" :header-cell-style="{
-      background:'#e4eaf6',color:'#000000',height:'70px'}">
-        <el-table-column type="index" width="100" height="70px" align="center" label="序号">
-          <template slot-scope="scope">
-            <el-tag v-if="scope.row.id%2 == 1" type="warning"> {{scope.row.id}} </el-tag>
-            <el-tag v-else type="primary"> {{scope.row.id}} </el-tag>
+      background:'#e4eaf6',color:'#000000',height:'70px'}" v-if="btnShow===true">
+        <el-table-column type="index" label="序号" width="100" align="center">
+          <template scope="scope">
+            <el-tag v-if="(scope.$index+1)%2 == 1" type="warning"> {{scope.$index+1}} </el-tag>
+            <el-tag v-else type="primary"> {{scope.$index+1}} </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="分类名称" align="center">
+        <el-table-column prop="title" label="标题" align="center">
         </el-table-column>
-        <el-table-column prop="class" label="分类级别" align="center">
+        <el-table-column prop="updateTime" label="时间" align="center">
         </el-table-column>
-        <el-table-column fixed="right" label="操作" align="center">
+        <el-table-column prop="promulgator" label="发布人" align="center">
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" align="center" width="350" v-show="btnShow===true">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleCheck(scope.row)">详情</el-button>
+            <el-button type="text" size="small" @click="handleDetails(scope.row)">详情</el-button>
             <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="text" size="small" @click="handleDel(scope.row)">删除</el-button>
           </template>
+        </el-table-column>
+      </el-table>
+      <el-table :data="tableData" stripe style="width: 100%;font-size:18px" :header-cell-style="{
+      background:'#e4eaf6',color:'#000000',height:'70px'}" v-else>
+        <el-table-column type="index" label="序号" width="100" align="center">
+          <template scope="scope">
+            <el-tag v-if="(scope.$index+1)%2 == 1" type="warning"> {{scope.$index+1}} </el-tag>
+            <el-tag v-else type="primary"> {{scope.$index+1}} </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="title" label="标题" align="center">
+        </el-table-column>
+        <el-table-column prop="updateTime" label="时间" align="center">
+        </el-table-column>
+        <el-table-column prop="promulgator" label="发布人" align="center">
         </el-table-column>
       </el-table>
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="size" layout="total, sizes, prev, pager, next, jumper" :total="total">
@@ -36,15 +58,18 @@
     <el-drawer :title="dialogTitle" :visible.sync="dialogVisible" direction="rtl" size="25%" custom-class="drawer" ref="drawer">
       <div class="drawer__content">
         <el-form :label-position="labelPosition" :model="form">
-          <el-form-item label="公告标题">
-            <el-input v-model="form.name"></el-input>
+          <el-form-item label="标题">
+            <el-input v-model="form.title" :readonly="!isShow"></el-input>
           </el-form-item>
-          <el-form-item label="公告内容">
-            <el-input v-model="form.name"></el-input>
+          <!-- <el-form-item label="发布人" v-show="!isShow">
+            <el-input v-model="form.promulgator" :readonly="!isShow"></el-input>
+          </el-form-item> -->
+          <el-form-item label="内容">
+            <el-input type="textarea" v-model="form.content" :readonly="!isShow"></el-input>
           </el-form-item>
         </el-form>
         <div class="demo-drawer__footer">
-          <el-button type="primary" @click="$refs.drawer.closeDrawer()" :loading="loading">{{ loading ? '提交中 ...' : '提 交' }}</el-button>
+          <el-button type="primary" @click="submit" v-show="isShow">提交</el-button>
         </div>
       </div>
     </el-drawer>
@@ -56,28 +81,123 @@ export default {
   data () {
     return {
       search: {
-        class: '',
-        name: ''
+        title: '',
       },
-      tableData: [{ id: 1, name: '许三多', class: '总调度' }, { id: 2, name: '许三多',  class: '总调度' }, { id: 3, name: '许三多', class: '总调度' }, { id: 4, name: '许三多',  class: '总调度' }, { id: 5, name: '许三多', class: '总调度' }],
+      tableData: [{ id: 1, name: '许三多', class: '总调度' }, { id: 2, name: '许三多', class: '总调度' }, { id: 3, name: '许三多', class: '总调度' }, { id: 4, name: '许三多', class: '总调度' }, { id: 5, name: '许三多', class: '总调度' }],
       size: 10,
       total: 20,
       currentPage: 1,
       dialogVisible: false,
       roleDialog: false,
       dialogTitle: '',
-      loading: false,
       labelPosition: 'top',
       form: {
-        name: '',
-        lastClass:'',
-        lastLastClass:''
+        title: '',
+        promulgator: '',
+        content: ''
       },
-      timer: null,
-      options:[{value:1,label:'一级'},{value:2,label:'二级'}]
+      // 模式判断   a:详情，b:新增，c:编辑
+      mode: '',
+      // 提交按钮是否显示，默认显示，详情模式时隐藏
+      isShow: true,
+      btnShow: true
+    }
+  },
+  created () {
+    this.getAnnouncementList()
+  },
+  watch: {
+    $route (to, from) {
+      if(to.query.btnShow === false){
+        this.btnShow = this.$route.query.btnShow
+      }else if(to.query.btnShow === undefined){
+        this.btnShow = true
+      }
     }
   },
   methods: {
+    // 请求列表数据
+    getAnnouncementList () {
+      let data = {
+        title: this.search.title,
+        size: this.size,
+        current: this.currentPage
+      }
+      this.$Apis.announcementList(data).then(res => {
+        console.log(res);
+        this.tableData = res.data.list
+        this.current = res.data.current
+        this.size = res.data.size
+        this.total = res.data.total
+      })
+    },
+    // 查看详情
+    handleDetails (row) {
+      this.mode = 'a'
+      this.isShow = false
+      this.dialogVisible = true
+      this.dialogTitle = "公告详情"
+      this.form = { ...row }
+    },
+    handleAdd () {
+      this.mode = 'b'
+      this.isShow = true
+      this.dialogVisible = true
+      this.dialogTitle = "添加公告"
+      this.form = {}
+    },
+    handleEdit (row) {
+      this.mode = 'c'
+      this.isShow = true
+      this.dialogVisible = true
+      this.dialogTitle = "编辑公告"
+      this.form = { ...row }
+    },
+    // 点击提交
+    submit () {
+      let data = {
+        title: this.form.title,
+        promulgator: this.form.promulgator,
+        content: this.form.content
+      }
+      if (this.form.id) {
+        data.id = this.form.id
+      }
+      if (this.mode == 'c') {
+        this.$Apis.announcementListEdit(data).then(res => {
+          if (res.code === 200) {
+            this.dialogVisible = false
+            this.getAnnouncementList()
+          }
+        })
+      } else if (this.mode == 'b') {
+        this.$Apis.announcementListSave(data).then(res => {
+          if (res.code === 200) {
+            this.dialogVisible = false
+            this.getAnnouncementList()
+          }
+        })
+      } else {
+        this.isShow = true
+      }
+    },
+    // 删除
+    handleDel (row) {
+      this.$confirm('确认删除？').then(_ => {
+        let data = {
+          id: row.id
+        }
+        this.$Apis.announcementListDel(data).then(res => {
+          console.log(res);
+          if (res.code == 200) {
+            this.$message.success('操作成功')
+            this.getAnnouncementList()
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+      }).catch(_ => { })
+    },
     handleSizeChange (val) {
       this.currentPage = 1;
       this.pageSize = val;
@@ -85,30 +205,6 @@ export default {
     handleCurrentChange (val) {
       this.currentPage = val;
     },
-    handleAdd () {
-      this.dialogVisible = true
-      this.dialogTitle = "添加公告"
-      this.form = {}
-    },
-    handleCheck (row) {
-      this.dialogVisible = true
-      this.dialogTitle = "公告详情"
-      this.form = row
-    },
-    handleEdit (row) {
-      this.dialogVisible = true
-      this.dialogTitle = "编辑公告"
-      this.form = row
-    },
-    handleDel (row) {
-
-    },
-    // 点击取消
-    cancelForm () {
-      this.loading = false;
-      this.dialog = false;
-      clearTimeout(this.timer);
-    }
   }
 }
 </script>
@@ -116,20 +212,13 @@ export default {
 <style lang="scss" scoped>
 .tableCard {
   border-radius: 20px;
-  .btn {
-    span {
-      font-size: 16px;
-      color: #92929a;
-      margin-right: 20px;
-    }
-  }
   ::v-deep .el-card__header,
   el-card__body {
     font-size: 20px;
     padding: 30px 0;
     margin: 0 35px;
     border-bottom: none;
-    .num{
+    .num {
       color: blue;
     }
   }
@@ -151,11 +240,19 @@ export default {
   .el-button--text {
     font-size: 16px;
   }
-  .el-button--text:nth-child(1) {
-    color: #34a47e;
+  .el-pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: right;
   }
   .el-button--text:nth-child(2) {
+    color: #34a47e;
+  }
+  .el-button--text:nth-child(3) {
     color: #ec4040;
+  }
+  .el-button--text:nth-child(4) {
+    color: #ff9d0a;
   }
 }
 .drawer__content {
@@ -163,12 +260,6 @@ export default {
   margin-top: 50px;
   .el-select {
     width: 100%;
-  }
-  .demo-drawer__footer .el-button {
-    width: 200px;
-    margin-left: 100px;
-    position: fixed;
-    bottom: 10px;
   }
   ::v-deep .el-form-item__label {
     font-size: 18px;
@@ -180,15 +271,20 @@ export default {
     line-height: 50px;
     border-radius: 8px;
   }
+  ::v-deep .el-textarea__inner {
+    background-color: #f1f1f1;
+    height: 150px;
+    line-height: 50px;
+    border-radius: 8px;
+  }
 }
-::v-deep .el-checkbox__label{
-    line-height: 30px;
-    font-size: 16px;
-  }
-  ::v-deep .el-drawer__header{
-    font-size: 20px;
-    color: #000000;
-
-  }
+::v-deep .el-checkbox__label {
+  line-height: 30px;
+  font-size: 16px;
+}
+::v-deep .el-drawer__header {
+  font-size: 20px;
+  color: #000000;
+}
 </style>
 

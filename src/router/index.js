@@ -32,60 +32,51 @@ import Layout from '@/layout'
  */
 export const constantRoutes = [
   {
-    path: '/login',
-    component: () => import('@/views/login/index'),
-    hidden: true
-  },
-
-  {
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
     redirect: '/dashboard',
     children: [{
       path: 'dashboard',
-      name: 'Dashboard',
+      name: 'dashboard',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '工作台', icon: 'desktop' }
     }]
   },
-
   {
-    path: '/organization',
+    path: '/organizations',
     component: Layout,
-    redirect: '/organization/workersList',
-    name: 'Organization',
     meta: { title: '组织架构管理', icon: 'setting' },
+    redirect: '/organizations',
     children: [
       {
-        path: 'workersList',
-        name: 'WorkersList',
+        path: '/workersList',
+        name: 'workersList',
         component: () => import('@/views/organizations/workersList/index'),
-        meta: { title: '组织架构人员列表', icon: 'el-icon-minus' },
+        meta: { title: '组织架构人员列表', icon: 'el-icon-caret-right' },
       },
       {
-        path: 'details',
-        name: 'Details',
+        path: '/details',
+        name: 'details',
         component: () => import('@/views/organizations/workersList/details'),
-        meta: { title: '组织架构人员详情', icon: 'el-icon-minus' },
+        meta: { title: '组织架构人员详情', icon: 'el-icon-caret-right' },
         hidden: true
       },
       {
-        path: 'departmentMatch',
-        name: 'DepartmentMatch',
+        path: '/departmentMatch',
+        name: 'departmentMatch',
         component: () => import('@/views/organizations/departmentMatch/index'),
-        meta: { title: '部门接单类型分配', icon: 'el-icon-minus' }
+        meta: { title: '部门接单类型分配', icon: 'el-icon-caret-right' }
       },
       {
-        path: 'rolesList',
-        name: 'RolesList',
+        path: '/rolesList',
+        name: 'rolesList',
         component: () => import('@/views/organizations/rolesList/index'),
-        meta: { title: '角色管理', icon: 'el-icon-minus' }
+        meta: { title: '角色管理', icon: 'el-icon-caret-right' }
       }
     ]
   },
@@ -94,8 +85,8 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'businessProduct',
-        name: 'BusinessProduct',
+        path: '/businessProduct',
+        name: 'businessProduct',
         component: () => import('@/views/businessProduct/index'),
         meta: { title: '业务产品层级管理', icon: 'share' }
       }
@@ -104,28 +95,32 @@ export const constantRoutes = [
   {
     path: '/userInfo',
     component: Layout,
-    redirect: '/userInfo/usersList',
-    name: 'UserInfo',
+    redirect: '/usersList',
     meta: { title: '用户信息管理', icon: 'file-copy' },
     children: [
       {
-        path: 'usersList',
+        path: '/usersList',
         name: 'usersList',
         component: () => import('@/views/userInfo/usersList/index'),
-        meta: { title: '用户信息列表', icon: 'el-icon-minus' }
+        meta: { title: '用户信息列表', icon: 'el-icon-caret-right' }
       },
       {
-        path: 'addDetails',
-        name: 'AddDetails',
+        path: '/addDetails',
+        name: 'addDetails',
         component: () => import('@/views/userInfo/usersList/addDetails'),
-        meta: { title: '添加用户信息', icon: 'el-icon-minus' },
+        meta: { title: '用户信息详情', icon: 'el-icon-caret-right' },
         hidden:true
       },
       {
-        path: 'workOrderList',
-        name: 'WorkOrderList',
+        path: '/workOrderList',
+        name: 'workOrderList',
         component: () => import('@/views/userInfo/workOrderList/index'),
-        meta: { title: '项目安装单查询', icon: 'el-icon-minus' }
+        meta: { title: '项目安装单查询', icon: 'el-icon-caret-right' }
+      }, {
+        path: '/workOrderDetails',
+        name: 'workOrderDetails',
+        component: () => import('@/views/userInfo/workOrderList/workOrderDetails'),
+        meta: { title: '项目安装单详情', icon: 'el-icon-caret-right' }
       }
     ]
   },
@@ -134,8 +129,8 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'faultTypeList',
-        name: 'FaultTypeList',
+        path: '/faultTypeList',
+        name: 'faultTypeList',
         component: () => import('@/views/faultTypeList/index'),
         meta: { title: '保修故障类型管理', icon: 'tools' }
       }
@@ -144,80 +139,78 @@ export const constantRoutes = [
   {
     path: '/operationOrder',
     component: Layout,
-    redirect: '/operationOrder/orderList',
-    name: 'OperationOrder',
+    redirect: '/orderList',
     meta: { title: '运维工单管理', icon: 'view-module' },
     children: [
       {
-        path: 'orderList',
-        name: 'OrderList',
+        path: '/orderList',
+        name: 'orderList',
         component: () => import('@/views/operationOrder/orderList/index'),
-        meta: { title: '运维工单列表', icon: 'el-icon-minus' }
+        meta: { title: '运维工单列表', icon: 'el-icon-caret-right' }
       },
       {
-        path: 'addOrder',
-        name: 'AddOrder',
+        path: '/addOrder',
+        name: 'addOrder',
         component: () => import('@/views/operationOrder/orderList/addOrder'),
-        meta: { title: '创建运维工单', icon: 'el-icon-minus' },
+        meta: { title: '创建运维工单', icon: 'el-icon-caret-right' },
         hidden:true
       },
       {
-        path: 'editOrder',
-        name: 'EditOrder',
+        path: '/editOrder',
+        name: 'editOrder',
         component: () => import('@/views/operationOrder/orderList/editOrder'),
-        meta: { title: '编辑运维工单', icon: 'el-icon-minus' },
+        meta: { title: '编辑运维工单', icon: 'el-icon-caret-right' },
         hidden: true
       },
       {
-        path: 'checkOrder',
-        name: 'CheckOrder',
+        path: '/checkOrder',
+        name: 'checkOrder',
         component: () => import('@/views/operationOrder/orderList/checkOrder'),
-        meta: { title: '运维工单详情', icon: 'el-icon-minus' },
+        meta: { title: '运维工单详情', icon: 'el-icon-caret-right' },
         hidden: true
       },
       {
-        path: 'orderList-cus',
-        name: 'OrderList-cus',
+        path: '/orderList-cus',
+        name: 'orderList-cus',
         component: () => import('@/views/operationOrder/orderList-cus/index'),
-        meta: { title: '运维工单池', icon: 'el-icon-minus' }
+        meta: { title: '运维工单池', icon: 'el-icon-caret-right' }
       }, {
-        path: 'orderBackList',
-        name: 'OrderBackList',
+        path: '/orderBackList',
+        name: 'orderBackList',
         component: () => import('@/views/operationOrder/orderBackList/index'),
-        meta: { title: '退回运维工单列表', icon: 'el-icon-minus' }
+        meta: { title: '退回运维工单列表', icon: 'el-icon-caret-right' }
       },
       {
-        path: 'checkingOrder',
-        name: 'CheckingOrder',
+        path: '/checkingOrder',
+        name: 'checkingOrder',
         component: () => import('@/views/operationOrder/checkingOrder/index'),
-        meta: { title: '审核运维工单', icon: 'el-icon-minus' }
+        meta: { title: '审核运维工单', icon: 'el-icon-caret-right' }
       },
       {
-        path: 'installOrder',
-        name: 'InstallOrder',
+        path: '/installOrder',
+        name: 'installOrder',
         component: () => import('@/views/operationOrder/installOrder/index'),
-        meta: { title: '项目安装单查询', icon: 'el-icon-minus' }
+        meta: { title: '项目安装单查询', icon: 'el-icon-caret-right' }
       }
     ]
   },
   {
     path: '/agent',
     component: Layout,
-    redirect: '/agent/agentList',
-    name: 'Agent',
+    redirect: 'agentList',
     meta: { title: '代维单位管理', icon: 'fork' },
     children: [
       {
-        path: 'agentList',
-        name: 'AgentList',
+        path: '/agentList',
+        name: 'agentList',
         component: () => import('@/views/agent/agentList/index'),
-        meta: { title: '代维单位列表', icon: 'el-icon-minus' }
+        meta: { title: '代维单位列表', icon: 'el-icon-caret-right' }
       },
       {
-        path: 'agentOperation',
-        name: 'AgentOperation',
+        path: '/agentOperation',
+        name: 'agentOperation',
         component: () => import('@/views/agent/agentOperation/index'),
-        meta: { title: '代维单位转单记录', icon: 'el-icon-minus' }
+        meta: { title: '代维单位转单记录', icon: 'el-icon-caret-right' }
       }
     ]
   },
@@ -226,8 +219,8 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'announcement',
-        name: 'Announcement',
+        path: '/announcement',
+        name: 'announcement',
         component: () => import('@/views/announcement/index'),
         meta: { title: '公告管理', icon: 'root-list' }
       }
@@ -238,10 +231,35 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'systemDailyWork',
-        name: 'SystemDailyWork',
+        path: '/systemDailyWork',
+        name: 'systemDailyWork',
         component: () => import('@/views/systemDailyWork/index'),
         meta: { title: '系统人员日志记录', icon: 'usergroup' }
+      }
+    ]
+  },
+  {
+    path: '/notice',
+    component: Layout,
+    children: [
+      {
+        path: '/notice',
+        name: 'notice',
+        component: () => import('@/views/notice/index'),
+        meta: { title: '消息通知', icon: 'usergroup' },
+        hidden:true
+      }
+    ]
+  },
+  {
+    path: '/menu',
+    component: Layout,
+    children: [
+      {
+        path: '/menu',
+        name: 'menu',
+        component: () => import('@/views/menu/index'),
+        meta: { title: '菜单管理', icon: 'usergroup' },
       }
     ]
   },

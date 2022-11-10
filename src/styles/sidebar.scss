@@ -70,6 +70,10 @@
 
     .el-menu-item{
       font-size: $sideBarTextSize;
+      &:hover {
+        // background-color: $subMenuHover !important;
+        background: linear-gradient(to right, #4247ab, #101336);
+      }
     }
     .el-submenu__title{
       font-size: $sideBarTextSize;
@@ -98,7 +102,6 @@
       }
     }
   }
-
   .hideSidebar {
     .sidebar-container {
       width: 54px !important;

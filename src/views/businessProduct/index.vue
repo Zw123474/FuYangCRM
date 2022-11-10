@@ -4,64 +4,65 @@
     <PageTool style="margin-bottom:20px"></PageTool>
     <el-card class="tableCard" style="border-radius:20px" shadow="never">
       <div slot="header">
-        <svg-icon icon-class="phone" class="phoneIcon"></svg-icon>
+        <svg-icon icon-class="apps" class="appsIcon"></svg-icon>
         一级分类 <span class="num">888</span> 条
-        <el-input suffix-icon="el-icon-search" v-model="search.type" placeholder="搜索分类级别" style="width:300px;margin-left:30px"></el-input>
-        <el-button type="primary" size="medium" style="float:right" icon="el-icon-folder-add" @click="handleAdd">添加分类</el-button>
-        <el-button type="primary" size="medium" style="float:right" icon="el-icon-back">返回上级</el-button>
+        <el-input v-model="search.productName" placeholder="搜索分类名称" style="width:300px;margin-left:30px">
+          <i class="el-icon-search el-input__icon" slot="suffix" @click="getProductLevel">
+          </i>
+        </el-input>
+        <el-button type="primary" size="medium" style="float:right" @click="handleAdd" :disabled="search.parentId !== 0">
+          <svg-icon icon-class="Group" style="margin-right:5px"></svg-icon>添加分类
+        </el-button>
+        <el-button type="primary" size="medium" style="float:right" plain @click="backLast">
+          <svg-icon icon-class="GoBack" style="margin-right:5px"></svg-icon>返回上级
+        </el-button>
       </div>
       <el-table :data="tableData" stripe style="width: 100%;font-size:18px" :header-cell-style="{
-      background:'#e4eaf6',color:'#000000',height:'70px'}">
-        <el-table-column type="index" width="100" height="70px" align="center">
-          <template slot-scope="scope">
-            <el-tag v-if="scope.row.id%2 == 1" type="warning"> {{scope.row.id}} </el-tag>
-            <el-tag v-else type="primary"> {{scope.row.id}} </el-tag>
+      background:'#e4eaf6',color:'#000000',height:'70px'}" ref="getRow">
+        <el-table-column type="index" label="序号" width="100" align="center">
+          <template scope="scope">
+            <el-tag v-if="(scope.$index+1)%2 == 1" type="warning"> {{scope.$index+1}} </el-tag>
+            <el-tag v-else type="primary"> {{scope.$index+1}} </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="分类名称" align="center">
+        <el-table-column prop="productName" label="分类名称" align="center">
         </el-table-column>
-        <el-table-column prop="class" label="分类级别" align="center">
+        <el-table-column prop="productLevel" label="分类级别" align="center">
         </el-table-column>
         <el-table-column fixed="right" label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="text" size="small">删除</el-button>
-            <el-button type="text" size="small">新增下一级</el-button>
-            <el-button type="text" size="small">查看下一级</el-button>
+            <el-button type="text" size="small" @click="handleDel(scope.row)">删除</el-button>
+            <el-button type="text" size="small" @click="handleAddNext(scope.row)">新增下一级</el-button>
+            <el-button type="text" size="small" @click="handleCheckNext(scope.row)">查看下一级</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="size" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+      <!-- <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="size" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination> -->
     </el-card>
     <!-- 添加编辑抽屉栏 -->
     <el-drawer :title="dialogTitle" :visible.sync="dialogVisible" direction="rtl" size="25%" custom-class="drawer" ref="drawer">
       <div class="drawer__content">
         <el-form :label-position="labelPosition" :model="form">
-          <el-form-item label="所属上级">
-            <el-select v-model="form.lastClass" placeholder="默认顶级">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+          <el-form-item label="分类级别">
+            <!-- <el-select v-model="form.productLevel" placeholder="默认顶级">
+              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
-            </el-select>
-            <el-select v-model="form.lastClass" placeholder="默认二级" style="margin-top:20px" v-if="form.lastLastClass">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+            </el-select> -->
+            <el-input v-model="form.productLevel" placeholder="默认顶级" disabled></el-input>
+            <!-- <el-select v-model="form.productLevel" placeholder="默认二级" style="margin-top:20px" v-if="form.lastLastClass">
+              <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
-            </el-select>
+            </el-select> -->
+            <!-- <el-input v-model="form.productLevel" placeholder="默认二级"></el-input> -->
           </el-form-item>
           <el-form-item label="分类名称">
-            <el-input v-model="form.name"></el-input>
+            <el-input v-model="form.productName"></el-input>
           </el-form-item>
         </el-form>
         <div class="demo-drawer__footer">
-          <el-button type="primary" @click="$refs.drawer.closeDrawer()" :loading="loading">{{ loading ? '提交中 ...' : '提 交' }}</el-button>
+          <el-button type="primary" @click="submit">提交</el-button>
         </div>
       </div>
     </el-drawer>
@@ -73,50 +74,128 @@ export default {
   data () {
     return {
       search: {
-        class: '',
-        name: ''
+        parentId: 0,
+        productName: '',
+        queryType: 'LIST'
       },
-      tableData: [{ id: 1, name: '许三多', class: '总调度' }, { id: 2, name: '许三多',  class: '总调度' }, { id: 3, name: '许三多', class: '总调度' }, { id: 4, name: '许三多',  class: '总调度' }, { id: 5, name: '许三多', class: '总调度' }],
+      tableData: [{ id: 1, name: '许三多', class: '总调度' }, { id: 2, name: '许三多', class: '总调度' }, { id: 3, name: '许三多', class: '总调度' }, { id: 4, name: '许三多', class: '总调度' }, { id: 5, name: '许三多', class: '总调度' }],
       size: 10,
       total: 20,
       currentPage: 1,
       dialogVisible: false,
       roleDialog: false,
       dialogTitle: '',
-      loading: false,
       labelPosition: 'top',
       form: {
-        name: '',
-        lastClass:'',
-        lastLastClass:''
+        productName: '',
+        productLevel: '',
+        parentId: 0
       },
-      timer: null,
-      options:[{value:1,label:'一级'},{value:2,label:'二级'}]
+      options: [{ value: 1, label: '一级' }, { value: 2, label: '二级' }],
+      isEdit: false,
     }
   },
+  created () {
+    this.getProductLevel()
+  },
   methods: {
-    handleSizeChange (val) {
-      this.currentPage = 1;
-      this.pageSize = val;
+    // 请求列表数据
+    getProductLevel () {
+      let data = {
+        parentId: this.search.parentId,
+        productName: this.search.productName,
+        queryType: this.search.queryType
+      }
+      this.$Apis.productLevel(data).then(res => {
+        console.log(res);
+        if (res.data[0]) {
+          this.search.parentId = res.data[0].parentId
+        }
+        this.tableData = res.data
+      })
     },
-    handleCurrentChange (val) {
-      this.currentPage = val;
+    // 查看下一级别列表
+    handleCheckNext (row) {
+      this.search.queryType = 'BELOW'
+      this.search.parentId = row.id
+      this.getProductLevel()
     },
+    // 返回上一级
+    backLast () {
+      if (this.search.parentId === 0) {
+        this.$message({
+          message: '已经是一级了！',
+          type: 'warning'
+        });
+      } else {
+        this.search.queryType = 'SENIOR'
+        this.search.productName = ''
+        this.getProductLevel()
+      }
+    },
+    // 添加和编辑
     handleAdd () {
       this.dialogVisible = true
+      this.isEdit = false
       this.dialogTitle = "添加业务产品类型"
       this.form = {}
     },
     handleEdit (row) {
       this.dialogVisible = true
+      this.isEdit = true
       this.dialogTitle = "编辑业务产品类型"
-      this.form = row
+      this.form = { ...row }
     },
-    // 点击取消
-    cancelForm () {
-      this.loading = false;
-      this.dialog = false;
-      clearTimeout(this.timer);
+    // 点击提交
+    submit () {
+      let data = {
+        parentId: this.form.parentId,
+        productName: this.form.productName,
+      }
+      if (this.form.id) {
+        data.id = this.form.id
+      }
+      if (this.isEdit) {
+        this.$Apis.productLevelEdit(data).then(res => {
+          if (res.code === 200) {
+            this.dialogVisible = false
+            this.getProductLevel()
+          }
+        })
+      } else {
+        this.$Apis.productLevelSave(data).then(res => {
+          if (res.code === 200) {
+            this.dialogVisible = false
+            this.getProductLevel()
+          }
+        })
+      }
+    },
+    // 删除
+    handleDel (row) {
+      this.$confirm('确认删除？').then(_ => {
+        let data = {
+          id: row.id
+        }
+        this.$Apis.productLevelDel(data).then(res => {
+          console.log(res);
+          if (res.code == 200) {
+            this.$message.success('操作成功')
+            this.getProductLevel()
+          } else {
+            this.$message.error(res.msg)
+          }
+        })
+      }).catch(_ => { })
+    },
+    // 增加下一级
+    handleAddNext (row) {
+      this.dialogTitle = '新增下一级'
+      this.isEdit = false
+      this.dialogVisible = true
+      this.form.productLevel = row.productLevel + 1
+      this.form.parentId = row.id
+      this.form.productName = ''
     }
   }
 }
@@ -125,20 +204,13 @@ export default {
 <style lang="scss" scoped>
 .tableCard {
   border-radius: 20px;
-  .btn {
-    span {
-      font-size: 16px;
-      color: #92929a;
-      margin-right: 20px;
-    }
-  }
   ::v-deep .el-card__header,
   el-card__body {
     font-size: 20px;
     padding: 30px 0;
     margin: 0 35px;
     border-bottom: none;
-    .num{
+    .num {
       color: blue;
     }
   }
@@ -152,11 +224,11 @@ export default {
   ::v-deep .el-table tr {
     height: 70px;
   }
-  .el-pagination {
-    margin-top: 20px;
-    display: flex;
-    justify-content: right;
-  }
+  // .el-pagination {
+  //   margin-top: 20px;
+  //   display: flex;
+  //   justify-content: right;
+  // }
   .el-button--text {
     font-size: 16px;
   }
@@ -176,12 +248,6 @@ export default {
   .el-select {
     width: 100%;
   }
-  .demo-drawer__footer .el-button {
-    width: 200px;
-    margin-left: 100px;
-    position: fixed;
-    bottom: 10px;
-  }
   ::v-deep .el-form-item__label {
     font-size: 18px;
     color: black;
@@ -193,13 +259,13 @@ export default {
     border-radius: 8px;
   }
 }
-::v-deep .el-checkbox__label{
-    line-height: 30px;
-    font-size: 16px;
-  }
-  ::v-deep .el-drawer__header{
-    font-size: 20px;
-    color: #000000;
-  }
+::v-deep .el-checkbox__label {
+  line-height: 30px;
+  font-size: 16px;
+}
+::v-deep .el-drawer__header {
+  font-size: 20px;
+  color: #000000;
+}
 </style>
 

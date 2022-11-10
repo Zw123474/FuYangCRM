@@ -1,11 +1,11 @@
 import request from '../../src/utils/request'
 
 export default {
-  // 登录
-  login (data) {
+  // 代维单位列表
+  getLogList (data) {
     return request({
-      url: '/user/login',
-      method: 'post',
+      url: '/systemPersonnelLogEntity/pageList',
+      type: 'get',
       params: data
     })
   },

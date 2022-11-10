@@ -11,14 +11,23 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
- 
+
 // import { localData, sessionData } from './utils/local'
 // Vue.prototype.localData = localData
 // Vue.prototype.sessionData = sessionData
 
 import '@/icons' // icon
 import '@/permission' // permission control
+
+import Apis from '../src/api'
+Vue.prototype.$Apis = Apis
+
+
 import * as echarts from 'echarts'
+// import Vconsole from 'vconsole'
+// let vConsole = new Vconsole()
+// Vue.use(vConsole)
+
 Vue.prototype.$echarts = echarts
 
 import components from '@/components'

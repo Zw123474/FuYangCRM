@@ -75,7 +75,8 @@
     }
 }
 .el-form
-.el-select{
+.el-select
+{
   width: 100%;
 }
 .el-form-item{
@@ -88,7 +89,7 @@
   font-size: 20px;
   color: #000;
 }
-.el-date-editor.el-input, .el-date-editor.el-input__inner{
+.el-date-editor.el-input, .el-date-editor.el-input__inner,.el-textarea__inner,.el-cascader{
   width: 100%;
 }
 .el-input.is-disabled .el-input__inner{
@@ -103,3 +104,9 @@
 .el-textarea.is-disabled .el-textarea__inner{
   cursor: pointer;
 }
+.demo-drawer__footer .el-button {
+    width: 200px;
+    margin-left: calc(12.5% - 100px - 30px);
+    position: fixed;
+    bottom: 20px;
+  }

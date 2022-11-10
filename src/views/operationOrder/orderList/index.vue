@@ -18,65 +18,53 @@
       <div class="searchForm">
         <el-form ref="form" :model="search" label-width="auto" style="border-bottom:1px solid #ccc;padding:20px 20px 10px 10px;margin-bottom:20px">
           <el-row :gutter="10">
-            <el-col :span="6">
-              <el-form-item label="用户编号">
-                <el-input v-model="search.accountName" placeholder="请输入用户编号"></el-input>
+            <el-col :span="4">
+              <el-form-item label="创建时间">
+                <el-input v-model="search.createTime" placeholder="请输入创建时间"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
-              <el-form-item label="业务产品编号">
-                <el-select v-model="search.product" placeholder="请输入客户编号">
-                  <el-option v-for="item in productOptions" :key="item.id" :label="item.label" :value="item.id">
-                  </el-option>
+            <el-col :span="4">
+              <el-form-item label="部门id">
+                <el-input v-model="search.departmentId" placeholder="请输入部门id"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="是否转单">
+                <el-select v-model="search.isTransferOrder" placeholder="请选择是否转单">
+                  <el-option label="是" :value="1"></el-option>
+                  <el-option label="否" :value="0"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
-              <el-form-item label="报修人姓名">
-                <el-input v-model="search.cusNum" placeholder="请输入报修人姓名"></el-input>
+            <el-col :span="4">
+              <el-form-item label="运维人员id">
+                <el-input v-model="search.maintenanceStaffId" placeholder="请输入运维人员id"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
-              <el-form-item label="报修产品">
-                <el-input v-model="search.userName" placeholder="请输入报修产品"></el-input>
+            <el-col :span="4">
+              <el-form-item label="报修类别">
+                <el-input v-model="search.repairCategory" placeholder="请输入报修类别"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
-              <el-form-item label="报修人姓名">
-                <el-input v-model="search.userNum" placeholder="请输入报修人姓名"></el-input>
+            <el-col :span="4">
+              <el-form-item label="报修联系人">
+                <el-input v-model="search.repairContact" placeholder="请输入报修联系人"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
-              <el-form-item label="报修类型">
-                <el-select v-model="search.product" placeholder="请输入报修类型">
-                  <el-option v-for="item in productOptions" :key="item.id" :label="item.label" :value="item.id">
-                  </el-option>
-                </el-select>
+            <el-col :span="4">
+              <el-form-item label="报修联系电话">
+                <el-input v-model="search.repairContactNumber" placeholder="请输入报修联系电话"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="4">
               <el-form-item label="报修时间">
-                <el-date-picker v-model="search.startTime" type="date" placeholder="选择日期">
+                <el-date-picker v-model="search.repairTime" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
-              <el-form-item label="运维单创建时间">
-                <el-date-picker v-model="search.endTime" type="date" placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
-            <el-col :span="6">
-              <el-form-item label="运维单结束时间">
-                <el-date-picker v-model="search.endTime" type="date" placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="10">
-            <el-col :span="6">
-              <el-form-item label="运维人员">
-                <el-input v-model="search.proName" placeholder="请输入运维人员"></el-input>
+            <el-col :span="4">
+              <el-form-item label="用户编号">
+                <el-input v-model="search.userNumber" placeholder="请输入用户编号"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="18">
@@ -183,7 +171,7 @@ export default {
     },
     checkDetails (row) {
       console.log(row.type);
-      this.$router.push({ name: 'CheckOrder', query: { id: row.id, type: row.type }})
+      this.$router.push({ name: 'CheckOrder', query: { id: row.id, type: row.type } })
     },
     handleAdd () {
       this.$router.push({ name: 'AddOrder' })
