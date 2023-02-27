@@ -51,7 +51,7 @@ export const constantRoutes = [
     path: '/organizations',
     component: Layout,
     meta: { title: '组织架构管理', icon: 'setting' },
-    redirect: '/organizations',
+    redirect: '/workersList',
     children: [
       {
         path: '/workersList',
@@ -108,7 +108,7 @@ export const constantRoutes = [
         path: '/addDetails',
         name: 'addDetails',
         component: () => import('@/views/userInfo/usersList/addDetails'),
-        meta: { title: '用户信息详情', icon: 'el-icon-caret-right' },
+        meta: { title: '用户信息详情操作', icon: 'el-icon-caret-right' },
         hidden:true
       },
       {
@@ -174,7 +174,14 @@ export const constantRoutes = [
         name: 'orderList-cus',
         component: () => import('@/views/operationOrder/orderList-cus/index'),
         meta: { title: '运维工单池', icon: 'el-icon-caret-right' }
-      }, {
+      },
+      {
+        path: '/orderDetails',
+        name: 'orderDetails',
+        component: () => import('@/views/operationOrder/orderList-cus/orderDetails'),
+        meta: { title: '运维人员工单详情', icon: 'el-icon-caret-right' }
+      },
+       {
         path: '/orderBackList',
         name: 'orderBackList',
         component: () => import('@/views/operationOrder/orderBackList/index'),
@@ -185,6 +192,12 @@ export const constantRoutes = [
         name: 'checkingOrder',
         component: () => import('@/views/operationOrder/checkingOrder/index'),
         meta: { title: '审核运维工单', icon: 'el-icon-caret-right' }
+      },
+      {
+        path: '/checkingDetails',
+        name: 'checkingDetails',
+        component: () => import('@/views/operationOrder/checkingOrder/checkingDetails'),
+        meta: { title: '审核运维工单详情', icon: 'el-icon-caret-right' }
       },
       {
         path: '/installOrder',

@@ -8,13 +8,16 @@ import qs from 'qs'
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  timeout: 60000 // request timeout
 })
 // 全局拦截请求
 service.interceptors.request.use(config => {
   // showLoading();
   // config.headers.token = localStorage.getItem('tokenValue');
-  config.headers.base_token = '9fb6e4858fd04f1397c7b3c30907a717';
+  // console.log(localStorage.getItem('token'));
+  // config.headers.base_token = localStorage.getItem('token');
+  config.headers.base_token = '1fa717698a194b3db46972d69ca70153';
+  // config.headers.base_token = '1f6c78ea99624b999466a52cdca47052';
   // console.log(config);
   // config.headers.verificationCodeKey = localStorage.getItem('ToUserVerificationCodeKey');
 

@@ -106,7 +106,7 @@ export default {
         size: this.size,
       }
       this.$Apis.deptList(data).then(res => {
-        console.log(res);
+        // console.log(res);
         this.tableData = res.data.list
         this.currentPage = res.data.current
         this.size = res.data.size
@@ -118,11 +118,14 @@ export default {
         deptId: this.deptId,
         productStr: this.productStr
       }
-      console.log(data);
+      // console.log(data);
       this.$Apis.deptProBinding(data).then(res => {
-        console.log(res);
-        if(res.code ===200){
+        // console.log(res);
+        if (res.code == 200) {
+          this.$message.success('操作成功')
           this.deptList()
+        } else {
+          this.$message.error(res.msg)
         }
       })
     },
@@ -141,7 +144,7 @@ export default {
     },
     treeOptionList () {
       this.$Apis.treeOptionList().then(res => {
-        console.log(res);
+        // console.log(res);
         let obj = res.data
         this.formData = this.deleteChildren(obj)
       })
@@ -149,21 +152,23 @@ export default {
     handleSizeChange (val) {
       this.currentPage = 1;
       this.size = val;
+      this.deptList()
     },
     handleCurrentChange (val) {
       this.currentPage = val;
+      this.deptList()
     },
     handleMatch (row) {
       this.centerDialogVisible = true
       this.deptId = row.id
       this.productStr = []
       row.productLevelIdList.forEach(e => {
-        console.log(e);
-        const arr = eval('(' + e + ')')
+        // console.log(e);
+        const arr = eval('[' + e + ']')
         this.productStr.push(arr)
       })
-      console.log(this.productStr);
-      console.log(row.productLevelIdList);
+      // console.log(this.productStr);
+      // console.log(row.productLevelIdList);
     },
     submit () {
       this.centerDialogVisible = false

@@ -5,89 +5,105 @@
     <el-card class="tableCard" style="border-radius:20px" shadow="never">
       <!-- 头部信息和按钮 -->
       <div slot="header">
-        运维工单信息 <span class="num"> 888 </span> 条
-        <el-button plain type="primary" size="medium"><img src="@/assets/common/excel.png" alt=""> Excel导入</el-button>
+        项目安装单信息 <span class="num"> {{total}} </span> 条
+        <!-- <el-button plain type="primary" size="medium"><img src="@/assets/common/excel.png" alt=""> Excel导入</el-button> -->
       </div>
       <!-- 大搜索框 -->
       <div class="searchForm">
         <el-form ref="form" :model="search" label-width="100px">
           <el-row :gutter="10">
-            <el-col :span="4">
-              <el-form-item label="创建时间">
-                <el-input v-model="search.createTime" placeholder="请输入创建时间"></el-input>
+            <el-col :span="6">
+              <el-form-item label="用户名称">
+                <el-input v-model="search.userName" placeholder="账户名称"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="4">
-              <el-form-item label="部门id">
-                <el-input v-model="search.departmentId" placeholder="请输入部门id"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="是否转单">
-                <el-select v-model="search.isTransferOrder" placeholder="请选择是否转单">
-                  <el-option label="是" :value="1"></el-option>
-                  <el-option label="否" :value="0"></el-option>
+            <el-col :span="6">
+              <el-form-item label="用户编号">
+                <!-- <el-input v-model="search.userNumber" placeholder="请输入客户编号"></el-input> -->
+                <el-select v-model="search.userNumber" placeholder="用户编号" filterable>
+                  <el-option v-for="(item,inde) in oneToOneUserOptions" :key="inde" :label="item.name" :value="item.name">
+                  </el-option>
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="4">
-              <el-form-item label="运维人员id">
-                <el-input v-model="search.maintenanceStaffId" placeholder="请输入运维人员id"></el-input>
+            <el-col :span="6">
+              <el-form-item label="项目型名称">
+                <el-input v-model="search.itemName" placeholder="项目型名称"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="4">
-              <el-form-item label="报修类别">
-                <el-input v-model="search.repairCategory" placeholder="请输入报修类别"></el-input>
+            <el-col :span="6">
+              <el-form-item label="工单实例编号">
+                <el-input v-model="search.ticketInstanceNumber" placeholder="工单实例编号"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="4">
-              <el-form-item label="报修联系人">
-                <el-input v-model="search.repairContact" placeholder="请输入报修联系人"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="报修联系电话">
-                <el-input v-model="search.repairContactNumber" placeholder="请输入报修联系电话"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="报修时间">
-                <el-date-picker v-model="search.repairTime" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+            <el-col :span="6">
+              <el-form-item label="创建时间">
+                <el-date-picker v-model="search.createTime" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
             </el-col>
-            <el-col :span="4">
-              <el-form-item label="用户编号">
-                <el-input v-model="search.userNumber" placeholder="请输入用户编号"></el-input>
+            <el-col :span="6">
+              <el-form-item label="实际完工日期">
+                <el-date-picker v-model="search.actualCompletionDate" type="date" placeholder="选择日期" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+                </el-date-picker>
               </el-form-item>
             </el-col>
-            <el-col :span="4">
-              <el-form-item label="用户编号">
-                <el-input v-model="search.userNumber" placeholder="请输入用户编号"></el-input>
+            <el-col :span="6">
+              <el-form-item label="受理类型">
+                <!-- <el-input v-model="search.acceptanceType" placeholder="请输入用户名称"></el-input> -->
+                <el-select v-model="search.acceptanceType" placeholder="受理类型">
+                  <el-option label="批量新装" value="批量新装"></el-option>
+                  <el-option label="新装" value="新装">
+                  </el-option>
+                  <el-option label="移机" value="移机">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="工单流转情况">
+                <el-select v-model="search.workOrderFlow" placeholder="工单流转情况">
+                  <el-option v-for="item in orderFlowOptions" :key="item.id" :label="item.label" :value="item.label">
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
-        <el-button style="float:right" type="primary" icon="el-icon-search" size="small">搜索</el-button>
-        <el-button style="float:right" icon="el-icon-refresh-right" size="small">重置</el-button>
+        <el-button style="float:right" type="primary" icon="el-icon-search" size="small" @click="getWorkOrderList()">搜索</el-button>
+        <el-button style="float:right" icon="el-icon-refresh-right" size="small" @click="resetSearch">重置</el-button>
         <!-- 清除按钮浮动 -->
         <div style="clear:both"></div>
       </div>
       <el-table :data="tableData" stripe style="width: 100%;font-size:18px" :header-cell-style="{
       background:'#e4eaf6',color:'#000000',height:'70px'}">
-        <el-table-column prop="accountName" label="账户名称" width="200" align="center">
+        <el-table-column prop="userName" label="用户名称" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="cusNum" label="客户编号" width="200" align="center">
+        <el-table-column prop="userNumber" label="用户编号" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="userName" label="用户名称" width="200" align="center">
+        <el-table-column prop="itemName" label="项目型名称" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="userNum" label="用户编号" width="200" align="center">
+        <el-table-column prop="itemNumber" label="项目型编号" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="product" label="产品子类" width="200" align="center">
+        <el-table-column prop="address" label="地址" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="productClass" label="产品细类" width="200" align="center">
+        <el-table-column prop="acceptanceType" label="受理类型" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="productLine" label="产品线" width="200" align="center">
+        <!-- <el-table-column prop="createTime" label="创建时间" min-width="120" align="center">
+        </el-table-column>
+        <el-table-column prop="updateTime" label="修改时间" min-width="120" align="center">
+        </el-table-column> -->
+        <el-table-column prop="ticketInstanceNumber" label="工单实例编号" min-width="200" align="center">
+        </el-table-column>
+        <el-table-column prop="productLevelNameStr" label="业务类型" min-width="300" align="center">
+        </el-table-column>
+        <el-table-column prop="workOrderFlow" label="工单流转情况" min-width="200" align="center">
+        </el-table-column>
+        <el-table-column prop="requiredCompletionDate" label="要求完工日期" min-width="200" align="center">
+        </el-table-column>
+        <el-table-column prop="actualCompletionDate" label="实际完工日期" min-width="200" align="center">
+        </el-table-column>
+        <el-table-column prop="otherRemarks" label="其他备注" min-width="300" align="center">
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="250" align="center">
           <template slot-scope="scope">
@@ -109,14 +125,16 @@ export default {
     return {
       productOptions: [{ id: 1, label: '类别1' }, { id: 2, label: '类别2' }, { id: 3, label: '类别3' }],
       search: {
-        department: '',
-        name: ''
+        userName: '',
+        userNumber: '',
+        itemName: '',
+        ticketInstanceNumber: '',
+        createTime: '',
+        actualCompletionDate: '',
+        acceptanceType: '',
+        workOrderFlow: '',
       },
-      tableData: [{ id: 1, accountName: '许三多', cusNum: '13123456789', userName: '主管', userNum: 1, product: '总调度', productClass: '11111', productLine: '5556' },
-      { id: 2, accountName: '许二多', cusNum: '13123456789', userName: '主管', userNum: 1, product: '总调度', productClass: '11111', productLine: '5556' },
-      { id: 3, accountName: '许四多', cusNum: '13123456789', userName: '主管', userNum: 1, product: '总调度', productClass: '11111', productLine: '5556' },
-      { id: 4, accountName: '许五多', cusNum: '13123456789', userName: '主管', userNum: 1, product: '总调度', productClass: '11111', productLine: '5556' },
-      { id: 5, accountName: '许三多', cusNum: '13123456789', userName: '主管', userNum: 1, product: '总调度', productClass: '11111', productLine: '5556' }],
+      tableData: [],
       size: 10,
       total: 20,
       currentPage: 1,
@@ -132,37 +150,63 @@ export default {
         pwd: '',
         email: ''
       },
-      timer: null,
-      circleUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
+      dialogVisible: true,
+      orderFlowOptions: [
+        { id: 1, label: '回退' }, { id: 2, label: '退回延期' }, { id: 3, label: '延期' }, { id: 4, label: '正常流转' }
+      ],
+      oneToOneUserOptions:[]
     }
   },
+  created () {
+    this.getWorkOrderList()
+    this.getUserOptions()
+  },
   methods: {
-    handleCheckAllChange (val) {
-      this.checkedRoles = val ? roles : checkedRoles;
-      this.isIndeterminate = false;
+    // 获取用户编号下拉框
+    getUserOptions () {
+      this.$Apis.getUserOptions().then(res => {
+        this.oneToOneUserOptions = res.data
+      })
     },
-    handlecheckedRolesChange (value) {
-      let checkedCount = value.length;
-      this.checkAll = checkedCount === this.roles.length;
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.roles.length;
+    resetSearch () {
+      this.search = {}
+      this.getWorkOrderList()
+    },
+    getWorkOrderList () {
+      let data = {
+        userName: this.search.userName,
+        userNumber: this.search.userNumber,
+        itemName: this.search.itemName,
+        ticketInstanceNumber: this.search.ticketInstanceNumber,
+        createTime: this.search.createTime,
+        actualCompletionDate: this.search.actualCompletionDate,
+        acceptanceType: this.search.acceptanceType,
+        workOrderFlow: this.search.workOrderFlow,
+        current: this.currentPage,
+        size: this.size
+      }
+      this.$Apis.workOrderList(data).then(res => {
+        // console.log(res.data);
+        this.tableData = res.data.list
+        this.currentPage = res.data.current
+        this.size = res.data.size
+        this.total = res.data.total
+      })
     },
     handleSizeChange (val) {
       this.currentPage = 1;
-      this.pageSize = val;
+      this.size = val;
+      this.getWorkOrderList()
     },
     handleCurrentChange (val) {
       this.currentPage = val;
+      this.getWorkOrderList()
     },
     checkDetails (row) {
-      this.$router.push({ name: 'Details', query: { id: row.id } })
-    },
-    handleAdd () {
-      this.$router.push({ name: 'AddDetails' })
+      this.$router.push({ name: 'workOrderDetails', query: { id: row.id, mode: 'a' } })
     },
     handleEdit (row) {
-      this.dialogVisible = true
-      this.dialogTitle = "编辑子管理员"
-      this.form = row
+      this.$router.push({ name: 'workOrderDetails', query: { id: row.id, mode: 'c' } })
     },
   }
 }

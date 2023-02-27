@@ -20,17 +20,24 @@ export default {
     height: {
       type: String,
       default: '100%'
+    },
+    workOrderStatistics: {
+      type: Array,
+      require: true
     }
   },
   data () {
     return {
       chart: null,
-      data: [
-        { value: 30, name: '处理中' },
-        { value: 20, name: '处理完成待确认' },
-        { value: 20, name: '已完结' },
-        { value: 80, name: '待处理' },
-      ]
+      dataNew: [],
+      total: 0
+    }
+  },
+  watch: {
+    workOrderStatistics () {
+      if (this.workOrderStatistics.length > 0) {
+        this.initChart()
+      }
     }
   },
   mounted () {
@@ -52,22 +59,55 @@ export default {
   },
   methods: {
     initChart () {
+      if (this.chart != null) {
+        this.chart.dispose()
+      }
+      // console.log(1);
+      this.workOrderStatistics.map(item => {
+        let obj = {
+          name: item.label,
+          value: item.value
+        }
+        this.total = this.total + (item.value - 0)
+        this.dataNew.push(obj)
+      })
+
       this.chart = echarts.init(this.$el, 'macarons')
 
       this.chart.setOption({
-        title: {
-          text: '运维工单统计',
-          textStyle: {
-            color: 'black'
-          }
-        },
+        title: [
+          //   {
+          //   text: '运维工单统计',
+          //   textStyle: {
+          //     color: 'black'
+          //   }
+          // },
+          {
+            text: "运维工单总计",
+            x: "center",
+            y: "30%",
+            textStyle: {
+              fontSize: 16,
+              fontWeight: "bolder",
+              color: "black",
+            },
+          },
+          {
+            text: `${this.total}`,
+            x: "center",
+            y: "38%",
+            textStyle: {
+              fontSize: 16,
+              color: "black",
+            },
+          }],
         tooltip: {
           trigger: 'item',
         },
         legend: {
           show: true,
-          bottom:'0%',
-          textStyle:{
+          bottom: '10%',
+          textStyle: {
             fontSize: '10'
           }
         },
@@ -75,6 +115,7 @@ export default {
           {
             // name: 'Access From',
             left: '0%',
+            top:'-25%',
             type: 'pie',
             radius: ['45%', '60%'],
             avoidLabelOverlap: false,
@@ -82,18 +123,19 @@ export default {
               show: false,
               position: 'center',
             },
-            // emphasis: {
-            //   label: {
-            //     show: true,
-            //     fontSize: '24',
-            //     color: '#E6E6E6',
-            //     fontWeight: 'bold',
-            //   },
-            // },
+            emphasis: {
+              label: {
+                show: false,
+                fontSize: '20',
+                color: '#000',
+                fontWeight: 'bold',
+              },
+            },
             labelLine: {
               show: false,
             },
-            data: this.data,
+            // data: this.workOrderStatistics,
+            data: this.dataNew
           },
         ],
         color: [

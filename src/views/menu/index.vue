@@ -125,7 +125,7 @@ export default {
           menuId: row.id
         }
         this.$Apis.menuDel(data).then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.code == 200) {
             this.$message.success('操作成功')
             this.menuList()

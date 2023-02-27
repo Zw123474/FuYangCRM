@@ -5,7 +5,7 @@
     <el-card class="tableCard" style="border-radius:20px" shadow="never">
       <div slot="header">
         <svg-icon icon-class="apps" class="appsIcon"></svg-icon>
-        一级分类 <span class="num">888</span> 条
+        {{currentLevel}} 级分类 <span class="num">{{total}}</span> 条
         <el-input v-model="search.typeName" placeholder="搜索分类名称" style="width:300px;margin-left:30px">
           <i class="el-icon-search el-input__icon" slot="suffix" @click="getFaultType">
           </i>
@@ -76,7 +76,7 @@ export default {
       search: {
         parentId: 0,
         typeName: '',
-        queryType:'LIST'
+        queryType: 'LIST'
       },
       tableData: [{ id: 1, name: '许三多', class: '总调度' }, { id: 2, name: '许三多', class: '总调度' }, { id: 3, name: '许三多', class: '总调度' }, { id: 4, name: '许三多', class: '总调度' }, { id: 5, name: '许三多', class: '总调度' }],
       size: 10,
@@ -93,6 +93,7 @@ export default {
       },
       options: [{ value: 1, label: '一级' }, { value: 2, label: '二级' }],
       isEdit: false,
+      currentLevel: 1
     }
   },
   created () {
@@ -104,13 +105,17 @@ export default {
       let data = {
         parentId: this.search.parentId,
         typeName: this.search.typeName,
-        queryType:this.search.queryType
+        queryType: this.search.queryType
       }
       this.$Apis.faultType(data).then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.data[0]) {
+          this.currentLevel = res.data[0].productLevel
           this.search.parentId = res.data[0].parentId
+        } else {
+          this.currentLevel = this.currentLevel + 1
         }
+        this.total = res.data.length
         this.tableData = res.data
       })
     },
@@ -178,7 +183,7 @@ export default {
           id: row.id
         }
         this.$Apis.faultTypeDel(data).then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.code == 200) {
             this.$message.success('操作成功')
             this.getFaultType()
@@ -195,7 +200,7 @@ export default {
       this.dialogVisible = true
       this.form.typeLevel = row.typeLevel + 1
       this.form.parentId = row.id
-      this.form.typeName=''
+      this.form.typeName = ''
     }
   }
 }

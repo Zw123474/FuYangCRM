@@ -13,7 +13,7 @@ const name = defaultSettings.title || '富阳工单运维系统' // page title
 // For example, Mac: sudo npm run
 // You can change the port by the following methods:
 // port = 9528 npm run dev OR npm run dev --port = 9528
-const port = process.env.port || process.env.npm_config_port || 9528 // dev port
+const port = process.env.port || process.env.npm_config_port || 9527 // dev port
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
@@ -27,7 +27,7 @@ module.exports = {
   publicPath: './',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development',
+  lintOnSave: false,
   productionSourceMap: false,
   devServer: {
     port: port,
@@ -38,13 +38,13 @@ module.exports = {
     },
     proxy: {
       '/api': {
-        // target: 'http://gongdan.java.68hanchen.com/admin', // 接口地址的前缀
+        // target: 'https://jkywxt.fywasu.com/admin', // 接口地址的前缀
         // target: 'http://192.168.0.2:8381/',// 接口本地地址
         target: 'http://192.168.0.59:8381/',// 接口本地地址
         changeOrigin: true, // 允许websockets跨域
         pathRewrite: {
           // '^/api': 'https://szwy.zjwsrc.com/admin'
-          '^/api': ''
+          '^/api': '/'
         }
       }
     },

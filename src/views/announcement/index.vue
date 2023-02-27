@@ -7,11 +7,10 @@
         <svg-icon icon-class="apps" class="appsIcon"></svg-icon>
         历史发布公告 <span class="num">{{total}}</span> 条
         <el-input v-model="search.title" placeholder="搜索公告标题" style="width:300px;margin-left:30px">
-          <i class="el-icon-search el-input__icon" slot="suffix" @click="getAnnouncementList()">
-          </i>
         </el-input>
-        <el-button type="primary" size="medium" style="float:right" v-show="btnShow===true" @click="handleAdd">
-          <svg-icon icon-class="Group" style="margin-right:5px"></svg-icon>添加分类
+        <el-button type="primary" icon="el-icon-search" @click="getAnnouncementList()">搜索</el-button>
+        <el-button type="primary" size="medium" v-show="btnShow===true" @click="handleAdd">
+          <svg-icon icon-class="Group" style="margin-right:5px"></svg-icon>添加公告
         </el-button>
       </div>
       <el-table :data="tableData" stripe style="width: 100%;font-size:18px" :header-cell-style="{
@@ -65,7 +64,7 @@
             <el-input v-model="form.promulgator" :readonly="!isShow"></el-input>
           </el-form-item> -->
           <el-form-item label="内容">
-            <el-input type="textarea" v-model="form.content" :readonly="!isShow"></el-input>
+            <el-input type="textarea" v-model="form.content" :readonly="!isShow" maxlength="300" show-word-limit></el-input>
           </el-form-item>
         </el-form>
         <div class="demo-drawer__footer">
@@ -124,7 +123,7 @@ export default {
         current: this.currentPage
       }
       this.$Apis.announcementList(data).then(res => {
-        console.log(res);
+        // console.log(res);
         this.tableData = res.data.list
         this.current = res.data.current
         this.size = res.data.size
@@ -188,7 +187,7 @@ export default {
           id: row.id
         }
         this.$Apis.announcementListDel(data).then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.code == 200) {
             this.$message.success('操作成功')
             this.getAnnouncementList()
@@ -201,9 +200,11 @@ export default {
     handleSizeChange (val) {
       this.currentPage = 1;
       this.pageSize = val;
+      this.getAnnouncementList()
     },
     handleCurrentChange (val) {
       this.currentPage = val;
+      this.getAnnouncementList()
     },
   }
 }
@@ -276,6 +277,9 @@ export default {
     height: 150px;
     line-height: 50px;
     border-radius: 8px;
+  }
+  ::v-deep .el-textarea .el-input__count{
+    background-color: #f1f1f1;
   }
 }
 ::v-deep .el-checkbox__label {

@@ -24,11 +24,8 @@
       </el-pagination>
     </el-card>
     <el-dialog title="分配角色" :visible.sync="roledialogVisible">
-      <el-checkbox-group v-model="checkList">
-        <el-checkbox v-for="item in menuList" :key="item.id" :label="item.id">{{
-          item.name
-        }}</el-checkbox>
-      </el-checkbox-group>
+      <el-tree :data="menuList" show-checkbox :props="defaultProps" node-key="id" ref="tree" :check-strictly="isCheck">
+      </el-tree>
       <template #footer>
         <el-button type="primary" @click="submit">确定</el-button>
         <el-button @click="roledialogVisible = false">取消</el-button>
@@ -38,24 +35,34 @@
 </template>
 
 <script>
+import { logger } from 'runjs/lib/common'
 export default {
   data () {
     return {
+      defaultProps: {
+        children: 'children',
+        label: 'name'
+      },
       tableData: [{ id: 1, role: '主管' }, { id: 2, role: '一级主管' }, { id: 3, role: '一级主管' }, { id: 4, role: '一级主管', }, { id: 5, role: '一级主管', }],
       size: 10,
       total: 20,
       currentPage: 1,
       roledialogVisible: false,
       checkList: [],
+      fatherIdList: [],
+      menuIds: [],
       search: '',
       menuList: [],
-      roleId:''
+      roleId: '',
+      isCheck: false
     }
   },
   created () {
     this.getRole()
+    this.getMenuList()
   },
   methods: {
+    // 获取表格数据，所有角色列表
     getRole () {
       let data = {
         current: this.currentPage,
@@ -69,13 +76,14 @@ export default {
         this.total = res.data.total
       })
     },
+    // 获取弹框打开后的菜单列表
     getMenuList () {
-      console.log(111);
       this.$Apis.menuList().then(res => {
-        console.log(res);
+        // console.log(res);
         this.menuList = res.data
       })
     },
+    // 分页展示
     handleSizeChange (val) {
       this.currentPage = 1;
       this.size = val;
@@ -85,30 +93,47 @@ export default {
       this.currentPage = val;
       this.getRole()
     },
+    // 点击管理权限操作
     handlerole (row) {
       this.roledialogVisible = true
-      this.getMenuList()
       this.roleId = row.id
-      this.checkList = row.menuIdList
+      // console.log(this.$refs.tree.setCheckedKeys(row.menuIdList));
+      // this.checkList = row.menuIdList
+      this.isCheck = true //重点：回显之前一定要设置为true
+      this.$nextTick(() => {
+        this.$refs.tree.setCheckedKeys(row.menuIdList) //给树节点赋值回显
+        this.isCheck = false //重点： 赋值完成后 设置为false
+      })
     },
+    // 绑定菜单
     roleBinding () {
+      this.checkList = this.$refs.tree.getCheckedKeys()
+      this.fatherId = this.$refs.tree.getHalfCheckedKeys()
+      this.menuIds = this.checkList.concat(this.fatherId)
+      // console.log(this.menuIds, this.menuIds.toString());
       let data = {
-        menuIds: this.checkList,
+        menuIds: this.menuIds.toString(),
         roleId: this.roleId
       }
+      // console.log(data);
+      // console.log(this.$refs.tree.getHalfCheckedKeys());
+      // console.log(data);
       this.$Apis.roleBinding(data).then(res => {
-        console.log(res);
-        if(res.code === 200){
+        // console.log(res);
+        if (res.code === 200) {
+          this.$message.success('操作成功')
           this.getRole()
+          this.roledialogVisible = false
+        } else {
+          this.$message.warning(res.msg);
         }
       })
     },
+    // 弹框打开后点击确定操作
     // 给员工分配权限
     submit () {
-      this.roledialogVisible = false
-      this.checkList = this.checkList.toString()
       this.roleBinding()
-      this.getRole()
+      this.$refs.tree.getCheckedKeys()
     },
   }
 }

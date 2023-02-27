@@ -76,4 +76,12 @@ export default {
       params: data,
     })
   },
+  // 获取用户编号下拉框
+  getUserOptions () {
+    return request({
+      url: '/userInfoEntity/userInfOption',
+      type: 'get'
+      // params: data
+    })
+  },
 }

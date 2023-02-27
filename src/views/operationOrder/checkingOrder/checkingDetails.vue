@@ -3,9 +3,9 @@
     <!-- 基本信息 -->
     <el-card class="tableCard" shadow="never">
       <div slot="header">
-        编辑运维工单
+        查看运维工单
       </div>
-      <el-form ref="form" :model="addBasicForm" label-width="100px" label-position="top">
+      <el-form ref="form" :model="addBasicForm" label-width="100px" label-position="top" disabled>
         <el-row :gutter="20">
           <el-col :span="6">
             <el-form-item label="运维工单类型">
@@ -16,24 +16,24 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="6" v-if="addBasicForm.workOrderType== 'ROUTINE'">
+          <el-col :span="6">
             <el-form-item label="用户编号">
-              <!-- <el-input v-model="addBasicForm.userNumber" placeholder="用户编号" @change="getuserInfoList"></el-input> -->
-              <el-select v-model="addBasicForm.userNumber" filterable placeholder="请选择用户编号" @change="getuserInfoList">
-                <el-option v-for="(item,index) in oneToOneUserOptions" :key="index" :label="item.name" :value="item.name">
-                </el-option>
-              </el-select>
+              <el-input v-model="addBasicForm.userNumber" placeholder="用户编号"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="6" v-if="addBasicForm.workOrderType== 'SPECIAL'">
+          <el-col :span="6">
+            <el-form-item label="运维工单编号">
+              <el-input v-model="addBasicForm.workOrderCode" placeholder="运维工单编号"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
             <el-form-item label="业务类型">
               <el-cascader v-model="addBasicForm.productLevel" :options="productOptions" :props="props"></el-cascader>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="报修类型">
-              <!-- <el-input v-model="addBasicForm.repairCategory" placeholder="报修类型"></el-input> -->
-              <el-cascader v-model="addBasicForm.repairCategory" :options="faultTreeOptions" :props="props"></el-cascader>
+              <el-input v-model="addBasicForm.repairCategory" placeholder="报修类型"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -64,11 +64,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="所属片区">
-              <!-- <el-input v-model="addBasicForm.areaBelongs" placeholder="所属片区"></el-input> -->
-              <el-select v-model="addBasicForm.areaBelongs" filterable placeholder="请选择所属片区">
-                <el-option v-for="(item,index) in areaInfOption" :key="index" :label="item.name" :value="item.id">
-                </el-option>
-              </el-select>
+              <el-input v-model="addBasicForm.areaBelongs" placeholder="所属片区"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -83,8 +79,8 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <div class="userTitle" v-if="addBasicForm.workOrderType== 'ROUTINE'">用户信息</div>
-        <el-row :gutter="10" style="margin-bottom:20px" v-if="addBasicForm.workOrderType== 'ROUTINE'">
+        <div class="userTitle" v-if="infoTable.length > 0">用户信息</div>
+        <el-row :gutter="10" style="margin-bottom:20px" v-if="infoTable.length > 0">
           <el-col :span="6">
             <el-form-item label="用户名称">
               <el-input v-model="infoTable.userName" placeholder="用户名称" readonly></el-input>
@@ -96,72 +92,38 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="VPN名称">
-              <el-input v-model="infoTable.vpnName" readonly></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
             <el-form-item label="用户联系人">
               <el-input v-model="infoTable.contact" readonly></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="联系电话">
+            <el-form-item label="用户移动电话">
               <el-input v-model="infoTable.contactNumber" readonly></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="移动电话">
-              <el-input v-model="infoTable.mobilePhone" readonly></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="安装单状态" v-if="infoTable.installationWorkOrderAddForms">
-              <el-input v-model="infoTable.installationWorkOrderAddForms.workOrderFlow" readonly></el-input>
-            </el-form-item>
-            <el-form-item label="安装单状态" v-else>
-              <el-input v-model="addBasicForm.workOrderFlow" readonly></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="18">
-            <el-form-item label="业务类型">
-              <!-- <el-cascader v-model="infoTable.productLevel" :options="productOptions" :props="props" disabled></el-cascader> -->
-              <el-input v-model="infoTable.productLevelNameStr" readonly></el-input>
-            </el-form-item>
-          </el-col>
-          <!-- <el-col :span="6">
             <el-form-item label="业务类型">
               <el-cascader v-model="infoTable.productLevel" :options="productOptions" :props="props" disabled></el-cascader>
             </el-form-item>
-          </el-col> -->
+          </el-col>
         </el-row>
-        <el-row :gutter="10">
+        <el-row :gutter="10" v-if="addBasicForm.workOrderType== 'SPECIAL'">
           <el-col :span="12">
             <el-form-item label="派发部门">
-              <el-radio-group v-model="department">
+              <!-- <el-radio-group v-model="addBasicForm.department">
                 <el-radio label="1">默认派发</el-radio>
                 <el-radio label="2">指定派发</el-radio>
-              </el-radio-group>
+              </el-radio-group> -->
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="10" v-if="department=='2'">
+        <el-row :gutter="10" v-if="addBasicForm.workOrderType== 'SPECIAL' && addBasicForm.distributeDepartmentVoList !== []">
           <el-col :span="24">
             <el-form-item>
-              <el-checkbox-group v-model="checkList">
+              <el-checkbox-group v-model="showDept">
                 <el-checkbox v-for="dept in depList" :key="dept.id" :label="dept.name"></el-checkbox>
               </el-checkbox-group>
             </el-form-item>
-          </el-col>
-        </el-row>
-        <div class="userTitle">附件</div>
-        <el-row :gutter="10">
-          <el-col :span="24">
-            <!-- <el-upload class="upload-demo" :http-request="uploadHttp" action="name" :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList" list-type="picture">
-              <el-button size="small" type="primary" style="margin:20px 0">选择文件</el-button>
-              <div slot="tip" class="el-upload__tip">支持jpg/png文件，文件大小不超过500KB</div>
-            </el-upload> -->
-            <multigraph :url.sync="addBasicForm.annex" :src="addBasicForm.annex" :many="30"></multigraph>
           </el-col>
         </el-row>
         <el-row style="border-top:1px solid #ccc;margin-top:20px;padding-top:10px">
@@ -174,34 +136,38 @@
         </el-row>
       </el-form>
     </el-card>
-    <!-- <el-card class="tableCard" shadow="never" style="margin-bottom:30px">
+    <el-card class="tableCard" shadow="never" style="margin-bottom:30px">
       <div slot="header">
         运维人员补充字段
       </div>
       <el-form ref="form" :model="addBasicForm" label-width="100px" label-position="top">
-        <el-row :gutter="20">
+        <el-row :gutter="20" v-for="responser in addBasicForm.distributeMaintenanceStaffVoList" :key="responser.id">
           <el-col :span="6">
             <el-form-item label="运维人员">
-              <el-input v-model="responser.maintenanceStaffName" placeholder="运维人员"></el-input>
+              <el-input v-model="responser.maintenanceStaffName" placeholder="运维人员" disabled></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="6">
             <el-form-item label="故障类型判定">
-              <el-input v-model="addForm.faultTypeId" placeholder="故障类型判定"></el-input>
+              <el-input v-model="addBasicForm.faultTypeId" placeholder="故障类型判定" disabled></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="代维单位">
-              <el-input v-model="addForm.agentMaintainUnitId" placeholder="代维单位"></el-input>
+              <el-input v-model="addBasicForm.agentMaintainUnitId" placeholder="agentMaintainUnitId" disabled></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="是否调用工队">
-              <el-select v-model="addForm.constructionTeam">
-                <el-option label="是" value="YES"></el-option>
-                <el-option label="否" value="NO">
+              <el-input v-model="addBasicForm.constructionTeam" placeholder="是否调用工队" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="运维工单状态">
+              <el-select v-model="addBasicForm.workOrderStatus" placeholder="运维工单状态" disabled>
+                <el-option v-for="item in orderStatus" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -210,32 +176,44 @@
         <el-row style="border-top:1px solid #ccc;margin-top:20px;padding-top:10px">
           <el-col :span="24">
             <el-form-item label="故障描述">
-              <el-input type="textarea" placeholder="备注详情" v-model="addForm.faultCause">
+              <el-input type="textarea" placeholder="备注详情" v-model="addBasicForm.faultDescription" disabled >
               </el-input>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-    </el-card> -->
+    </el-card>
+    <el-card class="tableCard" shadow="never" style="margin-bottom:30px">
+      <el-form ref="form" :model="addForm" label-width="100px" label-position="top">
+        <el-row style="border-top:1px solid #ccc;margin-top:20px;padding-top:10px">
+          <el-col :span="24">
+            <el-form-item label="结单反驳原因">
+              <el-input type="textarea" placeholder="反驳原因" v-model="addForm.turnDownReason">
+              </el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="审核备注">
+              <el-input type="textarea" placeholder="审核备注" v-model="addForm.reviewNotes">
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-card>
     <div class="submit">
-      <!-- <el-button>重置</el-button> -->
-      <el-button type="primary" @click="submit">提交</el-button>
+      <el-button size="medium" @click="finishOrder">完结</el-button>
+      <el-button size="medium" @click="turnDown">驳回</el-button>
     </div>
   </div>
 </template>
 
 <script>
-import website from '@/utils/website'
-import multigraph from '@/components/multigraph'
 export default {
-  components: {
-    multigraph
-  },
   data () {
     return {
       props: { value: 'id' },
       addBasicForm: {
-        annex: [],
         workOrderType: '',
         workOrderCode: '',
         userNumber: '',
@@ -244,18 +222,50 @@ export default {
         repairAddress: '',
         repairContact: '',
         repairContactNumber: '',
+        userName: '',
         repairSource: '',
         repairTime: '',
         areaBelongs: '',
         requireCompletionTime: '',
         faultLocation: '',
         faultDescription: '',
-        distributeDepartmentAddFormList: []
+        distributeDepartmentVoList: [],
+        returnRecordVoList:[],
+        turnDownRecordVoList:[]
       },
-      department: '',
+      addForm:{
+        reviewNotes:'',
+        turnDownReason:''
+      },
+      orderStatus: [
+        {
+          value: "PENDING_ORDER",
+          label: "待接单",
+        },
+        {
+          value: "RETURN",
+          label: "退回",
+        },
+        {
+          value: "PROCESSING",
+          label: "处理中",
+        },
+        {
+          value: "TURN_DOWN",
+          label: "处理完成待结单",
+        },
+        {
+          value: "PENDING_BILL",
+          label: "待结单",
+        },
+        {
+          value: "CHECK",
+          label: "已结单",
+        },
+      ],
+      showDept: [],
       productOptions: [],
-      oneToOneUserOptions: [],
-      fileList: [],
+      fileList: [{ name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100' }],
       typeOptions: [{ id: 1, label: '常规' }, { id: 2, label: '特殊' }],
       infoTable: {
         userName: '',
@@ -263,60 +273,37 @@ export default {
         userAddress: '',
         contact: '',
         contactNumber: '',
-        installationWorkOrderAddForms: {}
-      },
-      responser: {
-        maintenanceStaffName: ''
-      },
-      addForm: {
-        agentMaintainUnitId: '',
-        constructionTeam: '',
-        distributeMaintenanceStaffVoList: [],
-        faultCause: '',
-        faultTypeId: '',
-        remark: ''
       },
       depList: [],
       checkList: [],
-      areaInfOption: [],
-      faultTreeOptions: [],
-      annexList: [],
+      type: '',
+      id: '',
+      options: [{ id: 1, label: '产品1' }, { id: 2, label: '产品2' }],
+      fileList: [{ name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100' }],
+      typeOptions: [{ id: 1, label: '常规' }, { id: 2, label: '特殊' }],
     }
-  },
-  mounted () {
-    // console.log(this.checkList);
-
   },
   created () {
     this.id = this.$route.query.id
-    this.getProductOptions()
-    this.deptList()
     this.getOrderDetails()
-    this.getareaInfOption()
-    this.getfaultTreeOption()
-    this.getUserOptions()
   },
   methods: {
-    // 获取所属片区下拉框
-    getareaInfOption () {
-      this.$Apis.areaInfOption().then(res => {
-        // this.faultTreeOptions = res.data
-        this.areaInfOption = res.data
-
+    turnDown(){
+      let data = {
+        id: this.id,
+        turnDownReason:this.addForm.turnDownReason,
+        reviewNotes:this.addForm.reviewNotes
+      }
+      this.$Apis.turnDown(data).then(res => {
+        // console.log(res);
       })
     },
-    // 获取故障类型下拉框
-    getfaultTreeOption () {
-      this.$Apis.faultTreeOption().then(res => {
-        // this.faultTreeOptions = res.data
-        let obj = res.data
-        this.faultTreeOptions = this.deleteChildren(obj)
-      })
-    },
-    // 获取一机一档用户信息编号下拉框
-    getUserOptions () {
-      this.$Apis.getUserOptions().then(res => {
-        this.oneToOneUserOptions = res.data
+    finishOrder(){
+      let data = {
+        id:this.id
+      }
+      this.$Apis.finish(data).then(res =>{
+        // console.log(res);
       })
     },
     getOrderDetails () {
@@ -327,22 +314,6 @@ export default {
         // console.log(res);
         this.addBasicForm = res.data
         this.addBasicForm.productLevel = this.addBasicForm.productLevel.split(',').map(Number)
-        this.addBasicForm.repairCategory = this.addBasicForm.repairCategory.split(',').map(Number)
-        this.addBasicForm.areaBelongs = this.addBasicForm.areaBelongs - 0
-        if (this.addBasicForm.annex) {
-          this.addBasicForm.annex = this.addBasicForm.annex.split(',')
-        } else {
-          this.addBasicForm.annex = []
-        }
-        // let data = JSON.parse(JSON.stringify(this.addBasicForm))
-        // let img = data.annex.map(res => res.url ? res.url : res).join(',')
-        // this.addBasicForm.annex = img
-        // console.log(this.addBasicForm.distributeDepartmentVoList);
-        this.addBasicForm.distributeDepartmentVoList.forEach(dep => {
-          this.checkList.push(dep.departmentName)
-        })
-        this.department = this.checkList.length != 0 ? '2' : '1'
-        // console.log(this.addBasicForm.annex);
         this.getuserInfoList()
         this.deptList()
       })
@@ -366,6 +337,10 @@ export default {
       this.$Apis.deptList(data).then(res => {
         // console.log(res);
         this.depList = res.data.list
+        // console.log(this.addBasicForm.distributeDepartmentVoList);
+        this.addBasicForm.distributeDepartmentVoList.forEach(element => {
+          this.showDept.push(element.departmentName)
+        });
       })
     },
     getuserInfoList () {
@@ -400,55 +375,15 @@ export default {
         this.productOptions = this.deleteChildren(obj)
       })
     },
-    submit () {
-      // console.log(this.checkList);
-      this.addBasicForm.productLevel = this.addBasicForm.productLevel.toString()
-      this.addBasicForm.repairCategory = this.addBasicForm.repairCategory.toString()
-      if (this.department == '2') {
-        this.addBasicForm.distributeDepartmentAddFormList = this.handleCheckList(this.checkList)
-      } else {
-        this.addBasicForm.distributeDepartmentAddFormList = []
-      }
-      // this.addBasicForm.annex = this.annexList.toString()
-      // this.addSubmit()
-      // let data = this.addBasicForm
-      let data = JSON.parse(JSON.stringify(this.addBasicForm))
-      let img = data.annex.map(res => res.url ? res.url : res).join(',')
-      data.annex = img
-      // console.log(data);
-      this.$Apis.orderListSave(data).then(res => {
-        if (res.code === 200) {
-          this.$message.success('操作成功')
-          this.$router.push({ name: 'orderList' })
-        } else {
-          this.$message.error(res.msg)
-        }
-      })
-    },
-    // addSubmit(){
-    //   this.addForm.distributeMaintenanceStaffVoList = this.addForm.distributeMaintenanceStaffVoList.push(this.responser)
-    //   let data = this.addForm
-    //   this.$Apis.addSubmit(data).then(res => {
-    //     console.log(res);
-    //   })
-    // },
     handleRemove (file, fileList) {
       // console.log(file, fileList);
     },
     handlePreview (file) {
       // console.log(file);
     },
-    uploadHttp ({ file }) {
-      const addData = new FormData()
-      addData.append('file', file)
-      addData.append('moduleName', 'crm')
-      this.$Apis.uploadFile(addData).then(res => {
-        // console.log(this.fileList);
-        this.annexList.push(website.imgProxy + res.data)
-        // this.addData.headUrl = website.imgProxy + res.data
-        // console.log(res.data, 'res.data')
-      })
-    },
+    backOrder () {
+      this.$router.push({ name: 'OrderList' })
+    }
   }
 }
 </script>
@@ -475,7 +410,7 @@ export default {
     border: 1px solid #9fbcfe;
   }
   .userTitle {
-    margin: 20px 0;
+    margin: 20px 5px;
     font-size: 20px;
     color: #246ee7;
     font-weight: 700;
@@ -488,12 +423,15 @@ export default {
     padding: 30px 0;
   }
 }
+::v-deep .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner {
+  background-color: #409eff;
+}
 .submit {
   width: 100%;
   height: 60px;
   line-height: 60px;
   background-color: #fff;
-  padding-left: 92%;
+  padding-left: 88%;
   position: fixed;
   bottom: 0;
   right: 0;

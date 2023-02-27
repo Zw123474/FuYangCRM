@@ -24,6 +24,7 @@ Vue.prototype.$Apis = Apis
 
 
 import * as echarts from 'echarts'
+
 // import Vconsole from 'vconsole'
 // let vConsole = new Vconsole()
 // Vue.use(vConsole)

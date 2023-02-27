@@ -41,4 +41,12 @@ export default {
       params: data
     })
   },
+  // 代维单位下拉框
+  agentOption () {
+    return request({
+      url: '/agentMaintainUnitEntity/agentOption',
+      type: 'get'
+      // params: data
+    })
+  },
 }

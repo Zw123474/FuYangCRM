@@ -6,7 +6,11 @@
       <!-- 头部信息和按钮 -->
       <div slot="header">
         项目安装单信息 <span class="num"> {{total}} </span> 条
-        <el-button plain type="primary" size="medium"><img src="@/assets/common/excel.png" alt=""> Excel导入</el-button>
+        <!-- <el-button plain type="primary" size="medium"><img src="@/assets/common/excel.png" alt=""> Excel导入</el-button> -->
+        <el-upload :show-file-list="false" ref="upload" action="doUpload" :http-request="uploadHttp" :limit="1" :file-list="fileList">
+          <el-button plain type="primary" size="medium"><img src="@/assets/common/excel.png" alt=""> Excel导入</el-button>
+        </el-upload>
+        <el-button plain type="primary" size="medium" @click="downLoadTemplate"><img src="@/assets/common/excel.png" alt=""> 导入模板下载</el-button>
       </div>
       <!-- 大搜索框 -->
       <div class="searchForm">
@@ -19,17 +23,21 @@
             </el-col>
             <el-col :span="6">
               <el-form-item label="用户编号">
-                <el-input v-model="search.userNumber" placeholder="请输入客户编号"></el-input>
+                <!-- <el-input v-model="search.userNumber" placeholder="请输入用户编号"></el-input> -->
+                <el-select v-model="search.userNumber" placeholder="用户编号" filterable>
+                  <el-option v-for="(item,inde) in oneToOneUserOptions" :key="inde" :label="item.name" :value="item.name">
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="项目型名称">
-                <el-input v-model="search.itemName" placeholder="请输入用户名称"></el-input>
+                <el-input v-model="search.itemName" placeholder="请输入项目型名称"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="工单实例编号">
-                <el-input v-model="search.ticketInstanceNumber" placeholder="请输入用户编号"></el-input>
+                <el-input v-model="search.ticketInstanceNumber" placeholder="请输入工单实例编号"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
@@ -46,12 +54,21 @@
             </el-col>
             <el-col :span="6">
               <el-form-item label="受理类型">
-                <el-input v-model="search.acceptanceType" placeholder="请输入用户名称"></el-input>
+                <el-select v-model="search.acceptanceType" placeholder="请选择受理类型">
+                  <el-option label="批量新装" value="批量新装"></el-option>
+                  <el-option label="新装" value="新装">
+                  </el-option>
+                  <el-option label="移机" value="移机">
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="工单流转情况">
-                <el-input v-model="search.workOrderFlow" placeholder="请输入用户编号"></el-input>
+                <el-select v-model="search.workOrderFlow" placeholder="工单流转情况">
+                  <el-option v-for="item in orderFlowOptions" :key="item.id" :label="item.label" :value="item.label">
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-col>
           </el-row>
@@ -63,33 +80,33 @@
       </div>
       <el-table :data="tableData" stripe style="width: 100%;font-size:18px" :header-cell-style="{
       background:'#e4eaf6',color:'#000000',height:'70px'}">
-        <el-table-column prop="userName" label="用户名称" min-width="120" align="center">
+        <el-table-column prop="userName" label="用户名称" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="userNumber" label="用户编号" min-width="120" align="center">
+        <el-table-column prop="userNumber" label="用户编号" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="itemName" label="项目型名称" min-width="120" align="center">
+        <el-table-column prop="itemName" label="项目型名称" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="itemNumber" label="项目型编号" min-width="120" align="center">
+        <el-table-column prop="itemNumber" label="项目型编号" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="address" label="地址" min-width="120" align="center">
+        <el-table-column prop="address" label="地址" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="acceptanceType" label="受理类型" min-width="120" align="center">
+        <el-table-column prop="acceptanceType" label="受理类型" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" min-width="120" align="center">
+        <!-- <el-table-column prop="createTime" label="创建时间" min-width="120" align="center">
         </el-table-column>
         <el-table-column prop="updateTime" label="修改时间" min-width="120" align="center">
+        </el-table-column> -->
+        <el-table-column prop="ticketInstanceNumber" label="工单实例编号" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="ticketInstanceNumber" label="工单实例编号" min-width="150" align="center">
+        <el-table-column prop="productLevelNameStr" label="业务类型" min-width="300" align="center">
         </el-table-column>
-        <el-table-column prop="productLevel" label="产品层级" min-width="120" align="center">
+        <el-table-column prop="workOrderFlow" label="工单流转情况" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="workOrderFlow" label="工单流转情况" min-width="150" align="center">
+        <el-table-column prop="requiredCompletionDate" label="要求完工日期" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="requiredCompletionDate" label="要求完工日期" min-width="150" align="center">
+        <el-table-column prop="actualCompletionDate" label="实际完工日期" min-width="200" align="center">
         </el-table-column>
-        <el-table-column prop="actualCompletionDate" label="实际完工日期" min-width="150" align="center">
-        </el-table-column>
-        <el-table-column prop="otherRemarks" label="其他备注" min-width="120" align="center">
+        <el-table-column prop="otherRemarks" label="其他备注" min-width="300" align="center">
         </el-table-column>
         <el-table-column fixed="right" label="操作" width="250" align="center">
           <template slot-scope="scope">
@@ -136,13 +153,25 @@ export default {
         pwd: '',
         email: ''
       },
-      dialogVisible: true
+      dialogVisible: true,
+      orderFlowOptions: [
+        { id: 1, label: '回退' }, { id: 2, label: '退回延期' }, { id: 3, label: '延期' }, { id: 4, label: '正常流转' }
+      ],
+      fileList: [],
+      oneToOneUserOptions: []
     }
   },
   created () {
     this.getWorkOrderList()
+    this.getUserOptions()
   },
   methods: {
+    // 获取用户编号下拉框
+    getUserOptions () {
+      this.$Apis.getUserOptions().then(res => {
+        this.oneToOneUserOptions = res.data
+      })
+    },
     resetSearch () {
       this.search = {}
       this.getWorkOrderList()
@@ -161,7 +190,7 @@ export default {
         size: this.size
       }
       this.$Apis.workOrderList(data).then(res => {
-        console.log(res.data);
+        // console.log(res.data);
         this.tableData = res.data.list
         this.currentPage = res.data.current
         this.size = res.data.size
@@ -182,6 +211,29 @@ export default {
     },
     handleEdit (row) {
       this.$router.push({ name: 'workOrderDetails', query: { id: row.id, mode: 'c' } })
+    },
+    // 模板导出下载
+    downLoadTemplate () {
+      window.location.href = 'https://jkywxt.fywasu.com/admin/installationWorkOrderEntity/installationWorkOrderExport'
+    },
+    uploadHttp (file) {
+      // console.log(file)
+      const addData = new FormData()
+      addData.append('file', file.file)
+      // addData.append('moduleName', 'crm')
+      // console.log(file);
+      // console.log(addData);
+      this.$Apis.installationWorkOrderUpload(addData).then(res => {
+        // console.log(res)
+        if (res.code == 200) {
+          this.$message.success('上传成功')
+          this.getWorkOrderList()
+        } else {
+          this.$message.error(res.msg)
+        }
+        // this.addData.headUrl = website.imgProxy + res.data
+        // console.log(res.data, 'res.data')
+      })
     },
   }
 }
@@ -210,6 +262,10 @@ export default {
       margin-right: 5px;
     }
     .el-button {
+      font-size: 16px;
+      float: right;
+    }
+    .el-upload {
       font-size: 16px;
       float: right;
     }

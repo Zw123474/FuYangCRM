@@ -34,7 +34,14 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="受理类型">
-              <el-input v-model="addBasicForm.acceptanceType" placeholder="受理类型" :readonly="mode === 'a'"></el-input>
+              <el-input v-model="addBasicForm.acceptanceType" placeholder="受理类型" v-if="mode === 'a'" readonly></el-input>
+              <el-select v-model="addBasicForm.acceptanceType" placeholder="受理类型" v-else>
+                <el-option label="批量新装" value="批量新装"></el-option>
+                <el-option label="新装" value="新装">
+                </el-option>
+                <el-option label="移机" value="移机">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -53,13 +60,22 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="产品层级">
-              <el-cascader v-model="addBasicForm.productLevel" :options="productOptions" :props="props"></el-cascader>
+            <el-form-item label="业务类型">
+              <el-input v-model="addBasicForm.productLevelNameStr" v-if="mode === 'a'" readonly=""></el-input>
+              <el-cascader v-model="addBasicForm.productLevel" :options="productOptions" :props="props" v-else></el-cascader>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="6" v-if="mode == 'a'">
             <el-form-item label="工单流转情况">
               <el-input v-model="addBasicForm.workOrderFlow" placeholder="工单流转情况" :readonly="mode === 'a'"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6" v-else>
+            <el-form-item label="工单流转情况">
+              <el-select v-model="addBasicForm.workOrderFlow" placeholder="工单流转情况">
+                <el-option v-for="item in orderFlowOptions" :key="item.id" :label="item.label" :value="item.label">
+                </el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -114,6 +130,9 @@ export default {
       productOptions: [],
       mode: '',
       id: null,
+      orderFlowOptions: [
+        { id: 1, label: '回退' }, { id: 2, label: '退回延期' }, { id: 3, label: '延期' }, { id: 4, label: '正常流转' }
+      ]
     }
   },
   created () {
@@ -128,14 +147,14 @@ export default {
         id: this.id
       }
       this.$Apis.workOrderDetails(data).then(res => {
-        console.log(res);
+        // console.log(res);
         this.addBasicForm = res.data
         this.addBasicForm.productLevel = this.addBasicForm.productLevel.split(',').map(Number)
-        console.log(this.addBasicForm.productLevel);
+        // console.log(this.addBasicForm.productLevel);
       })
     },
     submit () {
-      console.log(this.addBasicForm.productLevel);
+      // console.log(this.addBasicForm.productLevel);
       this.addBasicForm.productLevel = this.addBasicForm.productLevel.toString()
       let data = this.addBasicForm
       this.$Apis.workOrderEdit(data).then(res => {
@@ -162,7 +181,7 @@ export default {
     },
     getProductOptions () {
       this.$Apis.treeOptionList().then(res => {
-        console.log(res);
+        // console.log(res);
         let obj = res.data
         this.productOptions = this.deleteChildren(obj)
       })

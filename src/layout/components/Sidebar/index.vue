@@ -74,8 +74,8 @@ export default {
   },
   created () {
     this.getMenu()
-    console.log(this.$route);
-    console.log(this.$route.path);
+    // console.log(this.$route);
+    // console.log(this.$route.path);
   },
   mounted () {
     this.setCurrentRoute()
@@ -83,23 +83,23 @@ export default {
   methods: {
     handSelect (index, indexPath) {
       this.show = index
-      console.log(index)
+      // console.log(index)
     },
     setCurrentRoute () {
       this.defaultActive = this.$route.name;//关键   通过他就可以监听到当前路由状态并激活当前菜单
-      console.log(this.defaultActive, 'defaultActive')
+      // console.log(this.defaultActive, 'defaultActive')
       // console.log(this.$route.name)
     },
     getMenu () {
       this.$Apis.menuNav().then(res => {
         this.menuList = res.data
-        console.log(this.menuList)
+        // console.log(this.menuList)
         if (this.menuList[0].path) {
           localStorage.setItem('menu', this.menuList[0].path)
         } else {
           localStorage.setItem('menu', this.menuList[0].children[0].path)
         }
-        console.log(this.menuList[0].path)
+        // console.log(this.menuList[0].path)
         var perms = []
         for (let i in this.menuList) {
           for (let j in this.menuList[i].children) {
@@ -109,7 +109,7 @@ export default {
           }
         }
         localStorage.setItem('btn', perms)
-        console.log(perms)
+        // console.log(perms)
       })
     }
   }

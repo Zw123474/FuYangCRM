@@ -5,7 +5,7 @@
     <el-card class="tableCard" style="border-radius:20px" shadow="never">
       <div slot="header">
         <svg-icon icon-class="apps" class="appsIcon"></svg-icon>
-        一级分类 <span class="num">888</span> 条
+        {{currentLevel}} 级分类 <span class="num">{{total}}</span> 条
         <el-input v-model="search.productName" placeholder="搜索分类名称" style="width:300px;margin-left:30px">
           <i class="el-icon-search el-input__icon" slot="suffix" @click="getProductLevel">
           </i>
@@ -16,6 +16,10 @@
         <el-button type="primary" size="medium" style="float:right" plain @click="backLast">
           <svg-icon icon-class="GoBack" style="margin-right:5px"></svg-icon>返回上级
         </el-button>
+        <el-upload :show-file-list="false" ref="upload" action="doUpload" :http-request="uploadHttp" :limit="1" :file-list="fileList" style="float:right" v-if="total == 0 && currentLevel == 1">
+          <el-button plain type="primary" size="medium"><img src="@/assets/common/excel.png" alt="">Excel导入</el-button>
+        </el-upload>
+        <el-button plain type="primary" size="medium" @click="downLoadTemplate" style="float:right" v-if="total == 0 && currentLevel == 1"><img src="@/assets/common/excel.png" alt="">导入模板下载</el-button>
       </div>
       <el-table :data="tableData" stripe style="width: 100%;font-size:18px" :header-cell-style="{
       background:'#e4eaf6',color:'#000000',height:'70px'}" ref="getRow">
@@ -93,6 +97,8 @@ export default {
       },
       options: [{ value: 1, label: '一级' }, { value: 2, label: '二级' }],
       isEdit: false,
+      total: '',
+      currentLevel: 1
     }
   },
   created () {
@@ -107,9 +113,13 @@ export default {
         queryType: this.search.queryType
       }
       this.$Apis.productLevel(data).then(res => {
-        console.log(res);
+        // console.log(res.data.length);
+        this.total = res.data.length
         if (res.data[0]) {
+          this.currentLevel = res.data[0].productLevel
           this.search.parentId = res.data[0].parentId
+        } else {
+          this.currentLevel = this.currentLevel + 1
         }
         this.tableData = res.data
       })
@@ -178,7 +188,7 @@ export default {
           id: row.id
         }
         this.$Apis.productLevelDel(data).then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.code == 200) {
             this.$message.success('操作成功')
             this.getProductLevel()
@@ -196,7 +206,30 @@ export default {
       this.form.productLevel = row.productLevel + 1
       this.form.parentId = row.id
       this.form.productName = ''
-    }
+    },
+    // 模板导出下载
+    downLoadTemplate () {
+      window.location.href = 'https://jkywxt.fywasu.com/admin/productLevelEntity/productInfoExport'
+    },
+    uploadHttp (file) {
+      // console.log(file)
+      const addData = new FormData()
+      addData.append('file', file.file)
+      // addData.append('moduleName', 'crm')
+      // console.log(file);
+      // console.log(addData);
+      this.$Apis.userInfUpload(addData).then(res => {
+        // console.log(res)
+        // this.addData.headUrl = website.imgProxy + res.data
+        // console.log(res.data, 'res.data')
+        if (res.code == 200) {
+          this.$message.success('上传成功')
+          this.getProductLevel()
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
   }
 }
 </script>
@@ -204,6 +237,25 @@ export default {
 <style lang="scss" scoped>
 .tableCard {
   border-radius: 20px;
+  ::v-deep .el-card__header {
+    font-size: 20px;
+    img {
+      width: 14px;
+      height: 14px;
+      margin-right: 5px;
+    }
+    .num {
+      color: blue;
+    }
+    .el-button {
+      font-size: 16px;
+      float: right;
+    }
+    .el-upload {
+      font-size: 16px;
+      float: right;
+    }
+  }
   ::v-deep .el-card__header,
   el-card__body {
     font-size: 20px;

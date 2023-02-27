@@ -33,4 +33,12 @@ export default {
       params: data
     })
   },
+  // 故障类型下拉框
+  faultTreeOption () {
+    return request({
+      url: '/faultTypeEntity/faultTreeOption',
+      type: 'get'
+      // params: data
+    })
+  },
 }

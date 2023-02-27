@@ -3,16 +3,16 @@
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
     <breadcrumb class="breadcrumb-container" />
     <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
+      <div class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img src="@/assets/common/avatar.png" class="user-avatar">
+          <img :src="avatars" class="user-avatar">
         </div>
-        <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <el-dropdown-item divided @click.native="logout">
+        <!-- <el-dropdown-menu slot="dropdown" class="user-dropdown"> -->
+          <!-- <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">退出登录</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+          </el-dropdown-item> -->
+        <!-- </el-dropdown-menu> -->
+      </div>
     </div>
     <el-badge is-dot class="item" :hidden="clickIf">
       <svg-icon icon-class="bell" class="bellIcon" @click="goNotice"></svg-icon>
@@ -39,7 +39,15 @@ export default {
   data () {
     return {
       clickIf: false,
-      isShow: false
+      isShow: false,
+      avatars: ''
+    }
+  },
+  mounted () {
+    if (JSON.parse(localStorage.getItem('userInfo')).headUrl.length !== 0) {
+      this.avatars = JSON.parse(localStorage.getItem('userInfo')).headUrl
+    } else {
+      this.avatars = 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
     }
   },
   watch: {
@@ -49,7 +57,7 @@ export default {
       } else {
         this.clickIf = true
       }
-    }
+    },
   },
   methods: {
     toggleSideBar () {
@@ -67,6 +75,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+::v-deep .el-dropdown-menu {
+  display: none;
+}
 .navbar {
   height: 75px;
   overflow: hidden;

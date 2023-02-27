@@ -37,39 +37,40 @@
         <div class="description">
           <!-- 上面详情描述 -->
           <div class="txt">
-            <h3>个人信息描述</h3>
-            <p style="height:120px">{{userDetails.remark}}</p>
+            <h3>个人信息</h3>
+            <p style="height:120px" v-if="userDetails.remark != ''">{{userDetails.remark}}</p>
             <!-- 中间三个卡片 -->
             <div class="threeCard">
               <div class="position">
                 <svg-icon icon-class="desk" class="deskIcon"></svg-icon>
                 <div class="right">
                   <h4>职位</h4>
-                  <p>{{userDetails.title}}</p>
+                  <p>{{userDetails.isAdmin == 1 ? '主管理员' : userDetails.isTotalSchedule == 1 ? '总调度' : userDetails.isDepartmentHeads== 1 ? '部门主管' : '运维人员'}}</p>
                 </div>
               </div>
               <div class="position">
                 <svg-icon icon-class="nav" class="deskIcon"></svg-icon>
                 <div class="right">
                   <h4>部门</h4>
-                  <p>研发部门</p>
+                  <p>{{depName}}</p>
                 </div>
               </div>
-              <div class="position">
+              <!-- <div class="position">
                 <svg-icon icon-class="man" class="deskIcon"></svg-icon>
                 <div class="right">
                   <h4>性别</h4>
                   <p>女</p>
                 </div>
-              </div>
+              </div> -->
             </div>
             <span>同部门人员</span>
             <!-- 下面表格 -->
-            <el-table :data="tableData" style="width: 100%" height="300">
-              <el-table-column prop="avatar" width="width">
-                <div class="avatar">
-                  <el-avatar :size="50" :src="circleUrl"></el-avatar>
-                </div>
+            <el-table :data="tableData" style="width: 100%" height="420">
+              <el-table-column>
+                <template slot-scope="scope">
+                  <img v-if="scope.row.headUrl" :src="scope.row.headUrl" style="width:50px;height:50px;border-radius:25px">
+                  <img v-else :src="circleUrl" style="width:50px;height:50px;border-radius:25px">
+                </template>
               </el-table-column>
               <el-table-column prop="userName" label="姓名" align="center">
               </el-table-column>
@@ -96,12 +97,14 @@ export default {
       tableData: [],
       id: '',
       deptId: '',
+      depName: '',
       userDetails: {}
     }
   },
   mounted () {
     this.id = this.$route.query.id
     this.deptId = this.$route.query.deptId
+    this.depName = this.$route.query.depName
     this.getUserDetails()
     this.getTableData()
   },
@@ -110,18 +113,18 @@ export default {
       let data = {
         id: this.id
       }
-      console.log(data);
+      // console.log(data);
       this.$Apis.userDetails(data).then(res => {
-        console.log(res.data);
+        // console.log(res.data);
         this.userDetails = res.data
       })
     },
     getTableData () {
       let data = {
-        deptId: this.deptId
+        deptId: this.deptId.split(',')[0].toString()
       }
       this.$Apis.userList(data).then(res => {
-        console.log(res.data);
+        // console.log(res.data);
         this.tableData = res.data.list
       })
     },
@@ -211,8 +214,9 @@ export default {
           margin-bottom: 5px;
         }
         p {
-          font-size: 24px;
+          font-size: 18px;
           margin: 0;
+          font-weight: bold;
         }
       }
     }

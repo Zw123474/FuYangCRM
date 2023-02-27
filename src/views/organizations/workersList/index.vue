@@ -5,31 +5,28 @@
     <el-card class="tableCard" style="border-radius:20px" shadow="never">
       <div slot="header">
         组织架构分类
-        <el-button type="primary" size="medium" @click="search.roleId = '';getTableData()">全部</el-button>
-        <el-button type="primary" plain size="medium" v-for="(val,index) in roleList" :key="index" @click="search.roleId = val.roleId;getTableData()">{{val.roleName}}</el-button>
-        <!-- <el-button type="primary" plain size="medium">总调度人员</el-button>
-        <el-button type="primary" plain size="medium">二级部门主管</el-button>
-        <el-button type="primary" plain size="medium">运维人员</el-button> -->
+        <!-- <el-button type="primary" size="medium" @click="syncDingding">
+          <svg-icon icon-class="Vector" class="VectorIcon"></svg-icon>同步钉钉组织架构
+        </el-button> -->
+        <el-button type="primary" plain size="medium" @click="search.roleId = '';getTableData()">全部</el-button>
+        <el-button type="primary" plain size="medium" v-for="(val,index) in roleList" :key="index" @click="search.roleId = val.id;getTableData()">{{val.roleName}}</el-button>
       </div>
       <div class="btn">
         <span>部门选择</span>
-        <el-select v-model="search.deptId" placeholder="部门选择" style="margin-right:20px">
-          <el-option v-for="item in tableData" :key="item.index" :label="item.deptName" :value="item.deptId">
+        <el-select v-model="search.deptId" placeholder="部门选择" style="margin-right:20px" clearable>
+          <el-option v-for="(item,index) in depOptions" :key="index" :label="item.name" :value="item.id">
           </el-option>
         </el-select>
         <span>姓名搜索</span>
-        <el-input v-model="search.userName" placeholder="按照姓名搜索" style="width:500px"></el-input>
+        <el-input v-model="search.userName" placeholder="按照姓名搜索" style="width:30%"></el-input>
         <el-button type="primary" icon="el-icon-search" @click="toSearch">搜索</el-button>
       </div>
       <div class="dingdingBtn">
-        <el-button type="primary" size="medium" @click="syncDingding">
-          <svg-icon icon-class="Vector" class="VectorIcon"></svg-icon>同步钉钉组织架构
-        </el-button>
         <!-- <el-button type="primary" size="medium" style="margin-left:20px" @click="handleAdd">
           添加子管理员
         </el-button> -->
       </div>
-      <el-table :data="tableData" stripe style="width: 100%;font-size:18px" :header-cell-style="{
+      <el-table :data="tableData" stripe style="width: 100%;font-size:18px;margin-top:30px" :header-cell-style="{
       background:'#e4eaf6',color:'#000000',height:'70px'}">
         <el-table-column type="index" width="100" align="center">
           <template scope="scope">
@@ -43,18 +40,17 @@
             <img v-else :src="circleUrl" style="width:50px;height:50px;border-radius:25px">
           </template>
         </el-table-column>
-        <el-table-column prop="userName" label="姓名" align="left">
+        <el-table-column prop="userName" label="姓名" align="left" width="120">
         </el-table-column>
-        <el-table-column prop="phone" label="手机号" align="center">
-        </el-table-column>
-        <el-table-column prop="roleName" label="职称" align="center">
-        </el-table-column>
-        <!-- <el-table-column prop="sex" label="性别" width="220" align="center">
+        <!-- <el-table-column label="职位" align="center">
           <template slot-scope="scope">
-            <el-tag v-if="scope.row.sex == 2" type="warning" color="#fef5f6"> 女 </el-tag>
-            <el-tag v-else type="primary"> 男 </el-tag>
+            {{scope.row.isAdmin == 1 ? '主管理员' : scope.row.isTotalSchedule == 1 ? '总调度' : scope.row.isDepartmentHeads== 1 ? '部门主管' : '运维人员'}}
           </template>
         </el-table-column> -->
+        <el-table-column prop="phone" label="手机号" align="center">
+        </el-table-column>
+        <el-table-column prop="roleName" label="角色" align="center">
+        </el-table-column>
         <el-table-column prop="deptName" label="所属部门" align="center">
         </el-table-column>
         <el-table-column fixed="right" label="操作" align="center" width="380">
@@ -62,7 +58,7 @@
             <el-button type="text" size="small" @click="checkDetails(scope.row)">详情</el-button>
             <!-- <el-button type="text" size="small" @click="handleEdit(scope.row,1)">编辑</el-button>
             <el-button type="text" size="small" @click="handleAdd(scope.row)">删除</el-button> -->
-            <el-button type="text" size="small" @click="handlerole(scope.row)">分配用户管理权限</el-button>
+            <el-button type="text" size="small" @click="handlerole(scope.row)">分配角色</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -109,11 +105,13 @@
     </el-drawer> -->
     <!-- 分配权限对话框 -->
     <el-dialog title="分配用户管理权限" :visible.sync="roleDialog" width="35%">
-      <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-      <div style="margin: 15px 0;"></div>
-      <el-checkbox-group v-model="roles" @change="handlecheckedRolesChange">
-        <el-checkbox v-for="(item,index) in checkedRoles" :label="item" :key="index">{{item}}</el-checkbox>
-      </el-checkbox-group>
+      <el-radio-group v-model="roles">
+        <el-radio v-for="(item,index) in checkedRoles" :label="item.id" :key="index">{{item.roleName}}</el-radio>
+      </el-radio-group>
+      <template #footer>
+        <el-button type="primary" @click="submit">确定</el-button>
+        <el-button @click="roleDialog = false">取消</el-button>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -137,7 +135,7 @@ export default {
       loading: false,
       labelPosition: 'top',
       checkAll: false,
-      checkedRoles: ['用户1名称 用户编号', '用户2名称 用户编号', '用户3名称 用户编号', '用户4名称 用户编号', '用户5名称 用户编号', '用户6名称 用户编号', '用户7名称 用户编号', '用户8名称 用户编号', '用户9名称 用户编号'],
+      checkedRoles: [],
       roles: [],
       isIndeterminate: true,
       // form: {
@@ -149,16 +147,56 @@ export default {
       //   email: ''
       // },
       circleUrl: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-      roleList: []
+      roleList: [],
+      userId: '',
+      depOptions: []
     }
   },
   created () {
     this.getTableData()
+    this.getRoleOptions()
+    this.getDeptList()
+    // console.log(this.roles);
   },
   methods: {
+    // 获取部门列表
+    getDeptList () {
+      let data = {
+        current: 1,
+        size: 999
+      }
+      this.$Apis.deptList(data).then(res => {
+        this.depOptions = res.data.list
+      })
+    },
+    submit () {
+      let data = {
+        roleId: this.roles,
+        userId: this.userId
+      }
+      // console.log(data);
+      this.$Apis.bindingRole(data).then(res => {
+        // console.log(res);
+        this.roleDialog = false
+        if (res.code == 200) {
+          this.$message.success('操作成功')
+          this.getTableData()
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+    getRoleOptions () {
+      this.$Apis.roleOptions().then(res => {
+        // console.log(res);
+        this.checkedRoles = res.data
+        this.roleList = res.data
+        console.log(res);
+      })
+    },
     syncDingding () {
       this.$Apis.syncDingding().then(res => {
-        console.log(res);
+        // console.log(res);
       })
     },
     toSearchroleId (row) {
@@ -176,33 +214,24 @@ export default {
         deptId: this.search.deptId
       }
       this.$Apis.userList(data).then(res => {
-        console.log(res.data);
+        // console.log(res.data);
         this.tableData = res.data.list
         this.size = res.data.size
         this.current = res.data.current
         this.total = res.data.total
-        console.log(this.tableData);
+        // console.log(this.tableData);
         const arr = this.tableData.filter(item => {
           return item.roleName !== ''
         })
-        let map = new Map()
-        for (let item of arr) {
-          if (!map.has(item.roleName)) {
-            map.set(item.roleName, item)
-          }
-        }
-        this.roleList = [...map.values()]
-        console.log(this.roleList);
+        // let map = new Map()
+        // for (let item of arr) {
+        //   if (!map.has(item.roleName)) {
+        //     map.set(item.roleName, item)
+        //   }
+        // }
+        // this.roleList = [...map.values()]
+        // console.log(this.roleList);
       })
-    },
-    handleCheckAllChange (val) {
-      this.checkedRoles = val ? roles : checkedRoles;
-      this.isIndeterminate = false;
-    },
-    handlecheckedRolesChange (value) {
-      let checkedCount = value.length;
-      this.checkAll = checkedCount === this.roles.length;
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.roles.length;
     },
     handleSizeChange (val) {
       this.currentPage = 1;
@@ -214,20 +243,13 @@ export default {
       this.getTableData()
     },
     checkDetails (row) {
-      this.$router.push({ name: 'details', query: { id: row.id, deptId: row.deptId } })
+      this.$router.push({ name: 'details', query: { id: row.id, deptId: row.deptId, depName: row.deptName } })
     },
-    // handleAdd () {
-    //   this.dialogVisible = true
-    //   this.dialogTitle = "添加子管理员"
-    //   this.form = {}
-    // },
-    // handleEdit (row) {
-    //   this.dialogVisible = true
-    //   this.dialogTitle = "编辑子管理员"
-    //   this.form = row
-    // },
     handlerole (row) {
       this.roleDialog = true
+      this.userId = row.id
+      this.roles = row.roleId - 0
+      console.log(row.roleId);
     },
   }
 }
@@ -248,6 +270,9 @@ export default {
     padding: 30px 0;
     margin: 0 35px;
     border-bottom: 2px solid #ebeef5;
+  }
+  ::v-deep .el-card__header .el-button{
+    float: none;
   }
   ::v-deep .el-card__body {
     margin: 0 35px;

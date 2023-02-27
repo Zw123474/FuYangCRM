@@ -5,7 +5,7 @@
     <el-card class="tableCard" style="border-radius:20px" shadow="never">
       <div slot="header">
         <svg-icon icon-class="apps" class="appsIcon"></svg-icon>
-        一级分类 <span class="num">{{total}}</span> 条
+        代维单位 <span class="num">{{total}}</span> 条
         <el-input v-model="search.unitName" placeholder="搜索单位名称" style="width:300px;margin-left:30px">
           <i class="el-icon-search el-input__icon" slot="suffix" @click="getAgentList">
           </i>
@@ -56,7 +56,7 @@
             <el-input v-model="form.phoneNumber" :readonly="!isShow"></el-input>
           </el-form-item>
           <el-form-item label="描述信息">
-            <el-input type="textarea" v-model="form.remark" :readonly="!isShow"></el-input>
+            <el-input type="textarea" v-model="form.remark" :readonly="!isShow" maxlength="300" show-word-limit></el-input>
           </el-form-item>
         </el-form>
         <div class="demo-drawer__footer">
@@ -106,7 +106,7 @@ export default {
         current: this.currentPage
       }
       this.$Apis.agentList(data).then(res => {
-        console.log(res);
+        // console.log(res);
         this.tableData = res.data.list
         this.current = res.data.current
         this.size = res.data.size
@@ -171,7 +171,7 @@ export default {
           id: row.id
         }
         this.$Apis.agentListDel(data).then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.code == 200) {
             this.$message.success('操作成功')
             this.getAgentList()
@@ -184,9 +184,11 @@ export default {
     handleSizeChange (val) {
       this.currentPage = 1;
       this.pageSize = val;
+      this.getAgentList()
     },
     handleCurrentChange (val) {
       this.currentPage = val;
+      this.getAgentList()
     },
   }
 }
@@ -259,6 +261,9 @@ export default {
     height: 150px;
     line-height: 50px;
     border-radius: 8px;
+  }
+  ::v-deep .el-textarea .el-input__count{
+    background-color: #f1f1f1;
   }
 }
 ::v-deep .el-checkbox__label {

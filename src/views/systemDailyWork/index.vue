@@ -11,28 +11,28 @@
       <div class="searchForm">
         <el-form ref="form" :model="search" label-width="100px" style="margin-bottom:30px">
           <el-row :gutter="10">
-            <el-col :span="5">
+            <el-col :span="6">
               <el-form-item label="系统人员">
-                <el-input v-model="search.sysUserName" placeholder="请输入系统人员名称"></el-input>
+                <el-input v-model="search.sysUserName" placeholder="系统人员名称"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="6">
               <el-form-item label="发送时间">
-                <el-date-picker v-model="search.createTime" type="date" placeholder="请输入发送时间" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
+                <el-date-picker v-model="search.createTime" type="date" placeholder="发送时间" format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd">
                 </el-date-picker>
               </el-form-item>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="6">
               <el-form-item label="操作类型">
-                <el-select v-model="search.operationType" clearable placeholder="请选择">
+                <el-select v-model="search.operationType" clearable placeholder="操作类型">
                   <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                   </el-option>
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="6">
               <el-form-item label="运维工单编号">
-                <el-input v-model="search.workOrderCode" placeholder="请输入运维工单编号"></el-input>
+                <el-input v-model="search.workOrderCode" placeholder="运维工单编号"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -106,23 +106,29 @@ export default {
       }],
       orderStatus: [
         {
-          value: 'PENDING_ORDER',
-          label: '待接单'
-        }, {
-          value: 'RETURN',
-          label: '退回'
-        }, {
-          value: 'PROCESSING',
-          label: '处理中'
-        }, {
-          value: 'TURN_DOWN',
-          label: '处理完成待结单'
-        }, {
-          value: 'OS_TURN_DOWN',
-          label: '已驳回'
-        }, {
-          value: 'CHECK',
-          label: '已结单'
+          value: "PENDING_ORDER",
+          label: "待接单",
+        },
+
+        {
+          value: "PROCESSING",
+          label: "处理中",
+        },
+        {
+          value: "RETURN",
+          label: "退回",
+        },
+        {
+          value: "TURN_DOWN",
+          label: "已驳回",
+        },
+        {
+          value: "PENDING_BILL",
+          label: "处理完成待结单",
+        },
+        {
+          value: "CHECK",
+          label: "已结单",
         }],
       search: {
         createTime: '',
@@ -154,7 +160,7 @@ export default {
         size: this.size
       }
       this.$Apis.getLogList(data).then(res => {
-        console.log(res.data);
+        // console.log(res.data);
         this.tableData = res.data.list
         this.currentPage = res.data.current
         this.size = res.data.size

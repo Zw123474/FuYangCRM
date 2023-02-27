@@ -34,12 +34,29 @@ export default {
       params: data
     })
   },
+  // 角色名称下拉框
+  roleOptions () {
+    return request({
+      url: '/role/roleList',
+      type: 'get'
+      // params: data
+    })
+  },
   // 角色绑定菜单
   roleBinding (data) {
     return request({
       url: '/role/bindingMenu',
       method: 'post',
       params: data
+    })
+  },
+  // 用户绑定角色
+  bindingRole (data) {
+    return request({
+      url: '/user/bindingRole',
+      method: 'post',
+      params: data
+      // qs: false
     })
   },
   // 部门列表
@@ -65,6 +82,14 @@ export default {
       method: 'post',
       params: data,
       qs: false
+    })
+  },
+  // 查询同部门运维人员
+  SameDeptOperatorList (data) {
+    return request({
+      url: '/user/userOption',
+      type: 'get',
+      params: data
     })
   },
 }

@@ -6,7 +6,11 @@
       <!-- 头部信息和按钮 -->
       <div slot="header">
         用户信息 <span class="num"> {{total}} </span> 条
-        <el-button plain type="primary" size="medium"><img src="@/assets/common/excel.png" alt=""> Excel导入</el-button>
+        <!-- <el-button plain type="primary" size="medium"><img src="@/assets/common/excel.png" alt=""> Excel导入</el-button> -->
+        <el-upload :show-file-list="false" ref="upload" action="doUpload" :http-request="uploadHttp" :limit="1" :file-list="fileList">
+          <el-button plain type="primary" size="medium"><img src="@/assets/common/excel.png" alt=""> Excel导入</el-button>
+        </el-upload>
+        <el-button plain type="primary" size="medium" @click="downLoadTemplate"><img src="@/assets/common/excel.png" alt=""> 导入模板下载</el-button>
         <el-button type="primary" size="medium" @click="handleAdd">
           <img src="@/assets/common/add.png" alt="">
           创建用户信息
@@ -37,8 +41,8 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="产品层级">
-                <!-- <el-select v-model="search.productLevel" placeholder="请选择产品层级">
+              <el-form-item label="业务类型">
+                <!-- <el-select v-model="search.productLevel" placeholder="请选择业务类型">
                   <el-option v-for="item in productOptions" :key="item.id" :label="item.label" :value="item.id">
                   </el-option>
                 </el-select> -->
@@ -71,13 +75,15 @@
       </div>
       <el-table :data="tableData" stripe style="width: 100%;font-size:18px" :header-cell-style="{
       background:'#e4eaf6',color:'#000000',height:'70px'}">
-        <el-table-column prop="accountName" label="账户名称" align="center" min-width="120">
+        <el-table-column prop="accountName" label="账户名称" align="center" min-width="150">
         </el-table-column>
-        <el-table-column prop="accountNumber" label="账户编号" align="center" min-width="120">
+        <el-table-column prop="accountNumber" label="账户编号" align="center" min-width="150">
         </el-table-column>
-        <el-table-column prop="userName" label="用户名称" align="center" min-width="120">
+        <el-table-column prop="userName" label="用户名称" align="center" min-width="150">
         </el-table-column>
-        <el-table-column prop="userNumber" label="用户编号" align="center" min-width="120">
+        <el-table-column prop="userNumber" label="用户编号" align="center" min-width="150">
+        </el-table-column>
+        <el-table-column prop="productLevelNameStr" label="业务类型" align="center" min-width="350">
         </el-table-column>
         <el-table-column prop="vpnName" label="VPN名称" align="center" min-width="120">
         </el-table-column>
@@ -109,13 +115,11 @@
         </el-table-column>
         <el-table-column prop="otherRemarks" label="其他备注" align="center" min-width="120">
         </el-table-column>
-        <el-table-column prop="productLevelNameStr" label="产品层级" align="center" min-width="300">
-        </el-table-column>
         <el-table-column prop="promotion" label="促销" align="center" min-width="120">
         </el-table-column>
         <el-table-column prop="seller" label="销售员" align="center" min-width="120">
         </el-table-column>
-        <el-table-column prop="userAddress" label="用户地址" align="center" min-width="120">
+        <el-table-column prop="userAddress" label="用户地址" align="center" min-width="200">
         </el-table-column>
         <el-table-column prop="userCompletionTime" label="用户完工时间" align="center" min-width="150">
         </el-table-column>
@@ -126,7 +130,7 @@
             <el-button type="text" size="small" @click="checkDetails(scope.row)">详情</el-button>
             <el-button type="text" size="small" @click="handleEdit(scope.row,1)">编辑</el-button>
             <el-button type="text" size="small" @click="handleDel(scope.row)">删除</el-button>
-            <el-button type="text" size="small" @click="handlerole(scope.row)">查看安装单信息</el-button>
+            <el-button type="text" size="small" @click="togomiao(scope.row,'miao')">查看安装单信息</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -156,6 +160,7 @@ export default {
       size: 10,
       total: 20,
       currentPage: 1,
+      fileList: []
     }
   },
   created () {
@@ -181,7 +186,7 @@ export default {
         size: this.size
       }
       this.$Apis.userInfoList(data).then(res => {
-        console.log(res.data);
+        // console.log(res.data);
         this.tableData = res.data.list
         this.currentPage = res.data.current
         this.size = res.data.size
@@ -203,7 +208,7 @@ export default {
     },
     getProductOptions () {
       this.$Apis.treeOptionList().then(res => {
-        console.log(res);
+        // console.log(res);
         let obj = res.data
         this.productOptions = this.deleteChildren(obj)
       })
@@ -231,13 +236,13 @@ export default {
     handleEdit (row) {
       this.$router.push({ name: 'addDetails', query: { id: row.id, mode: 'c' } })
     },
-    handleDel(row){
+    handleDel (row) {
       this.$confirm('确认删除？').then(_ => {
         let data = {
           id: row.id
         }
         this.$Apis.userInfoDel(data).then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.code == 200) {
             this.$message.success('操作成功')
             this.getuserInfoList()
@@ -246,7 +251,34 @@ export default {
           }
         })
       }).catch(_ => { })
-    }
+    },
+    togomiao (row, ID) {
+      localStorage.setItem('toId', ID);
+      this.$router.push({ name: 'addDetails', query: { id: row.id, mode: 'a' } })
+    },
+    // 模板导出下载
+    downLoadTemplate () {
+      window.location.href = 'https://jkywxt.fywasu.com/admin/userInfoEntity/userInfoExport'
+    },
+    uploadHttp (file) {
+      // console.log(file)
+      const addData = new FormData()
+      addData.append('file', file.file)
+      // addData.append('moduleName', 'crm')
+      // console.log(file);
+      // console.log(addData);
+      this.$Apis.userInfUpload(addData).then(res => {
+        // console.log(res)
+        // this.addData.headUrl = website.imgProxy + res.data
+        // console.log(res.data, 'res.data')
+        if (res.code == 200) {
+          this.$message.success('上传成功')
+          this.getuserInfoList()
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
   }
 }
 </script>
@@ -277,6 +309,10 @@ export default {
       color: blue;
     }
     .el-button {
+      font-size: 16px;
+      float: right;
+    }
+    .el-upload {
       font-size: 16px;
       float: right;
     }

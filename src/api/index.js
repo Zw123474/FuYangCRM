@@ -8,6 +8,8 @@ import agent from './agent'
 import announcement from './announcement'
 import systemLog from './systemLog'
 import userInfo from './userInfo'
+import orderList from './orderList'
+import areaBelongs from './areaBelongs'
 const Apis = Object.assign({},
   user,
   menu,
@@ -17,7 +19,9 @@ const Apis = Object.assign({},
   agent,
   announcement,
   systemLog,
-  userInfo
+  userInfo,
+  orderList,
+  areaBelongs
 )
 
 export default Apis
